@@ -12,6 +12,93 @@ router.get('/', function(req, res, next) {
 	});
 });
 
+router.get('/api/goods/list', function(req, res, next) {
+	res.json({
+		code:0,
+		data:[
+			{
+				id:1,
+				name:'家具家访',
+				data:[
+					{
+						name:'家访',
+						list:[
+							{
+								id:1,
+								name:'毛巾/浴巾',
+								imgUrl:'../../static/image/list1.jpg'
+							},
+							{
+								id:2,
+								name:'枕头',
+								imgUrl:'../../static/image/list1.jpg'
+							}
+					
+						]
+					},
+					{
+						name:'生活用品',
+						list:[
+							{
+								id:1,
+								name:'浴室用品',
+								imgUrl:'../../static/image/list1.jpg'
+							},
+							{
+								id:2,
+								name:'洗晒',
+								imgUrl:'../../static/image/list1.jpg'
+							}
+					
+						]
+					},
+				]
+			},
+			{
+				id:2,
+				name:'女装',
+				data:[
+					{
+						name:'裙装',
+						list:[
+							{
+								id:1,
+								name:'连衣裙',
+								imgUrl:'../../static/image/list1.jpg'
+							},
+							{
+								id:2,
+								name:'半身裙',
+								imgUrl:'../../static/image/list1.jpg'
+							}
+					
+						]
+					},
+					{
+						name:'上衣',
+						list:[
+							{
+								id:1,
+								name:'T恤',
+								imgUrl:'../../static/image/list1.jpg'
+							},
+							{
+								id:2,
+								name:'衬衫',
+								imgUrl:'../../static/image/list1.jpg'
+							}
+					
+						]
+					},
+				]
+			}
+			
+		]
+	})
+});
+
+
+
 router.get("/api/goods/search", function(req, res, next) {
 	// desc 降序 asc 升序
 
@@ -32,8 +119,6 @@ router.get("/api/goods/search", function(req, res, next) {
 	});
 
 });
-
-
 
 // 首页推荐的数据
 router.get("/api/index_list/data", function(req, res, next) {
@@ -708,6 +793,7 @@ router.get("/api/index_list/3/data/1", function(req, res, next) {
 		]
 	});
 });
+
 // 首页第一次触底的数据
 router.get("/api/index_list/1/data/2", function(req, res, next) {
 	res.json({
@@ -755,8 +841,6 @@ router.get("/api/index_list/1/data/2", function(req, res, next) {
 
 });
 
-
-
 // 运动户外第一次触底的数据
 router.get("/api/index_list/2/data/2", function(req, res, next) {
 	res.json({
@@ -801,7 +885,6 @@ router.get("/api/index_list/2/data/2", function(req, res, next) {
 		]
 	})
 });
-
 
 
 // 运动户外第二次触底的数据

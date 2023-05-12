@@ -26,9 +26,25 @@
 			}
 		}, {
 			"path": "pages/list/list",
-			"style": {
-				"navigationBarTitleText": "分类",
-				"enablePullDownRefresh": false
+			"style" :
+			{
+			    "navigationBarTitleText": "分类",
+			    "enablePullDownRefresh": false,
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"app-plus": {
+					"scrollIndicator": "none",
+					"titleNView": {
+						"searchInput": {
+							"placeholder": "请输入关键字",
+							"disabled": true,
+							"align": "left",
+							"autoFocus": true,
+							"borderRadius": "15px",
+							"backgroundColor": "#F7F7F7",
+							"placeholderColor": "#B3B3B3"
+						}
+					}
+				}
 			}
 
 		}, {
