@@ -1,6 +1,8 @@
 <template>
  <view class="commodity" :style="'flex-wrap:'+wrap+';'">
-	<view class='commodity-item' v-for="(item,index) in dataList" :key="index" :style="{width:itemW}">
+	 
+	 <!--单个商品组件-->
+	<view class='commodity-item' v-for="(item,index) in dataList" :key="index" :style="{width:itemW}" @tap="goDetail">
 				<image class='commodity-img' :src="item.imageUrl" mode="" :style="{height:bigH}"></image>
 				<view class='commodity-content'>
 					<text class='commodity-name' :style="{'font-size':nameSize}">大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008</text>
@@ -41,6 +43,13 @@
 			return {
                 
 			};
+		},
+		methods:{
+			goDetail(){
+				uni.navigateTo({
+					url:"../../pages/deatil/deatil"
+				})
+			}
 		}
 	}
 </script>

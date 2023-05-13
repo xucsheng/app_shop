@@ -4,7 +4,7 @@ import {
 
 export default {
 	common: {
-		baseUrl: "http://192.168.30.105:3000/api",
+		baseUrl: "http://192.168.30.106:3000/api",
 		data: {},
 		header: {
 			"Content-Type": "application/json",
