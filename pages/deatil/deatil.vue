@@ -3,18 +3,18 @@
 
 		<!--商品图-->
 		<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000">
-			<swiper-item v-for="(item,index) in swiperList" :key="index">
+			<swiper-item>
 				<view class="swiper-item">
-					<image :src="item.imgUrl" mode="" class="swiper-image"></image>
+					<image :src="goodsContent.imageUrl" mode="" class="swiper-image"></image>
 				</view>
 			</swiper-item>
 
 		</swiper>
 		<!--价格和名称-->
 		<view class="detail-goods">
-			<view class="goods-pprice">￥399.00</view>
-			<view class="goods-price">￥599</view>
-			<view class="goods-name">大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008</view>
+			<view class="goods-pprice">￥{{goodsContent.pprice}}</view>
+			<view class="goods-price">￥{{goodsContent.oprice}}</view>
+			<view class="goods-name">{{goodsContent.name}}</view>
 		</view>
 		<!--商品详情-->
 		<view>
@@ -34,21 +34,34 @@
 			<view class="iconfont icon-xiaoxi"></view>
 			<view class="iconfont icon-gouwuche"></view>
 			<view class="add-shopcart" @tap="showPop()">加入购物车</view>
-			<view class="purchase"   @tap="showPop()">立即购买</view>
+			<view class="purchase" @tap="showPop()">立即购买</view>
 		</view>
 		<!---底部弹出层-->
-		<view class="pop" v-show='isshow'>
+		<view class="pop" v-show='isshow' @touchmove.stop.prevent=''>
 			<!---底部蒙层-->
-			<view class="pop-mask"></view>
+			<view class="pop-mask" @tap="hidePop()"></view>
 			<!---内容块-->
-			<view class="pop-box"></view>
+			<view class="pop-box" :animation="animationData">
+				<view>
+					<image class="pop-img"   src="../../static/image/Furnishing.jpg" mode=""></image>
+				</view>
+				<view class="pop-num">
+					<view>购买数量</view>
+					<uni-number-box></uni-number-box>
+				</view>
+				<view class="pop-sub">
+					确定
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import Card from "@/components/index/Card.vue"
-	import CommodityList from "@/components/common/CommodityList.vue"
+	import $http from '@/common/api/request.js';
+	import Card from "@/components/index/Card.vue";
+	import CommodityList from "@/components/common/CommodityList.vue";
+	import UniNumberBox from "@/components/uni/uni-number-box/uni-number-box.vue"
 	export default {
 		data() {
 			return {
@@ -95,25 +108,110 @@
 						discount: "5.2"
 					}
 				],
-				isshow:false,
+				isshow: false,
+				animationData: {
+
+				},
+				goodsContent:{
+					
+				}
 			}
 		},
 		components: {
 			Card,
-			CommodityList
+			CommodityList,
+			UniNumberBox
+		},
+		// 点击分享
+		onNavigationBarButtonTap(e) {
+			if(e.type==='share'){
+				uni.share({
+					provider:"weixin",
+					type:0,
+					"scene":"WXSceneSession",
+					title:this.goodsContent.name,
+					"href":"http://192.168.30.106:8080/#/pages/deatil/deatil?id"+this.goodsContent.id,
+					imageUrl:this.goodsContent.imageUrl,
+					success: function (res) {
+							uni.showTabBar({
+								title:'分享成功'
+							})
+						},
+						fail: function (err) {
+							console.log("fail:" + JSON.stringify(err));
+						}
+					
+				})
+			}
+			
 		},
 		methods: {
-            showPop(){
+			showPop() {
+				var animation = uni.createAnimation({
+					duration: 200
+				})
+				animation.translateY(600).step();
+				this.animationData=animation.export();
 				this.isshow = true;
+				
+				setTimeout(()=>{
+					animation.translateY(0).step();
+					this.animationData=animation.export();
+				},200);
+
+			},
+			hidePop() {
+				var animation = uni.createAnimation({
+					duration: 200
+				})
+				animation.translateY(600).step();
+				this.animationData=animation.export();
+				this.isshow = true;
+				
+				setTimeout(()=>{
+					animation.translateY(0).step();
+					this.animationData=animation.export();
+				},200);
+				this.isshow = false;
+			},
+			// 请求商品
+			getData(id){
+				$http.request({
+					url: "/goods",
+					data:{
+						id:id
+					}
+				}).then((res) => {
+					this.goodsContent = res[0];
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
 			}
+
+		},
+		// 生命周期  修改返回默认行为
+		onBackPress() {
+		  if(this.isshow){
+			  this.hidePop();
+			  return true;
+		  }
+		},
+		onLoad(e) {
+			this.getData(e.id);
 		}
+		
+		
 	}
 </script>
 
 <style scoped>
-	.detail{
+	.detail {
 		padding-bottom: 30rpx;
 	}
+
 	swiper {
 		width: 100%;
 		height: 700rpx;
@@ -130,7 +228,8 @@
 		font-size: 36rpx;
 		padding: 10rpx 0;
 	}
-	.goods-price{
+
+	.goods-price {
 		text-decoration: line-through;
 		font-size: 24rpx;
 		color: #999999;
@@ -175,28 +274,45 @@
 		color: #FFFFFF;
 		border-radius: 40rpx;
 	}
-	.pop{
+
+	.pop {
 		position: fixed;
 		left: 0;
-		top:0;
+		top: 0;
 		width: 100%;
 		height: 100%;
 		z-index: 9999;
 	}
-	.pop-mask{
+
+	.pop-mask {
 		position: absolute;
 		left: 0;
 		top: 0;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(0, 0, 0,0.3);
+		background-color: rgba(0, 0, 0, 0.3);
 	}
-	.pop-box{
+
+	.pop-box {
 		position: absolute;
 		left: 0;
 		bottom: 0;
 		width: 100%;
-		height: 400px;
-		background-color: #E80080;
+		background-color: #FFFFFF;
+	}
+	.pop-img{
+		width: 260rpx;
+		height: 260rpx;
+	}
+	.pop-num{
+		padding: 20rpx;
+		display: flex;
+		justify-content: space-between;
+	}
+	.pop-sub{
+		line-height: 80rpx;
+		background-color: #49BDFB;
+		color: #FFFFFF;
+		text-align: center;
 	}
 </style>

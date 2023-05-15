@@ -3,6 +3,12 @@ import App from './App'
 // #ifndef VUE3
 import Vue from 'vue'
 Vue.config.productionTip = false
+
+import store from  'store/index.js';
+
+Vue.prototype.$store = store;
+
+
 App.mpType = 'app'
 
 try {
@@ -34,7 +40,9 @@ try {
 } catch (error) { }
 
 const app = new Vue({
-  ...App
+  ...App,
+  store
+  
 })
 app.$mount()
 // #endif
