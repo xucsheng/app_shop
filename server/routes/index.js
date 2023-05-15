@@ -12,6 +12,23 @@ router.get('/', function(req, res, next) {
 	});
 });
 
+
+
+router.get('/api/goods', function(req, res, next) {
+	let id = req.query.id;
+	console.log(id);
+	// 查询数据
+	connection.query("SELECT * FROM goods_search  where id ="+ id, (
+		err, result, fileIds) => {
+		if (err) throw err;
+		res.send({
+			code: 0,
+			data: result
+		})
+	});
+	
+});
+
 router.get('/api/goods/list', function(req, res, next) {
 	res.json({
 		code:0,
