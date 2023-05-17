@@ -61,7 +61,8 @@
 	import $http from '@/common/api/request.js';
 	import Card from "@/components/index/Card.vue";
 	import CommodityList from "@/components/common/CommodityList.vue";
-	import UniNumberBox from "@/components/uni/uni-number-box/uni-number-box.vue"
+	import UniNumberBox from "@/components/uni/uni-number-box/uni-number-box.vue";
+	import {mapMutations} from 'vuex'
 	export default {
 		data() {
 			return {
@@ -147,6 +148,7 @@
 			
 		},
 		methods: {
+			...mapMutations(['addShopCart']),
 			showPop() {
 				var animation = uni.createAnimation({
 					duration: 200
@@ -193,7 +195,7 @@
 			},
 			// 改变商品数量
 			changeNumber(value){
-				this.name = value;
+				this.num = value;
 			},
 			// 跳转到购物车页面
 			goShopCart(){
@@ -203,7 +205,18 @@
 			},
 			// 加入购物车
 			addCart(){
-				
+				let goods = this.goodsContent;
+				this.goodsContent['checked'] = false;
+				this.goodsContent['num'] = this.num;
+				// 添加到购物车
+				this.addShopCart( this.goodsContent);
+				// 隐藏弹出框
+				this.hidePop();
+				// 提示信息
+				uni.showToast({
+					title:'成功加入购物车',
+					icon:'none'
+				})
 			}
 
 		},
