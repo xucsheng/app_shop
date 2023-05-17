@@ -60,10 +60,12 @@
 		}, {
 			"path": "pages/my/my",
 			"style": {
-				"navigationBarTitleText": "我的",
-				"enablePullDownRefresh": false
+				"app-plus": {
+					"titleNView":false,
+					"scrollIndicator": "none"
+					
+				}
 			}
-
 		}
 	    ,{
             "path" : "pages/search/search",
@@ -152,6 +154,49 @@
 						
 					}
 				}
+            }
+            
+        }
+        ,{
+            "path" : "pages/myConfig/myConfig",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "设置",
+			   "navigationBarBackgroundColor": "#FFFFFF",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/myPathList/myPathList",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "地址管理",
+				"navigationBarBackgroundColor": "#FFFFFF",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/myAddPath/myAddPath",
+            "style": {
+            	"navigationBarTitleText": "新增地址",
+            	"navigationBarBackgroundColor": "#FFFFFF",
+            	"navigationStyle": "default",
+            	"app-plus": {
+            		
+            		"titleNView": {
+            			"buttons": [
+            				{
+            					"float": "right",
+            					"color": "#636263",
+            					"text": "保存",
+            					"fontSize": "16px",
+            					"fontWeight": "60PX"
+            				}
+            			]
+            		}
+            	}
             }
             
         }
