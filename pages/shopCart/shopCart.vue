@@ -1,42 +1,65 @@
 <template>
 	<view class="shop-cart">
-		<!--自定义导航栏-->
-		<uniNavBar title="购物车" :right-text="isNavBar ? '完成':'编辑'" fixed="true" status-bar="true"
-			@clickRight="isNavBar = !isNavBar"></uniNavBar>
-		<!--商品内容-->
-		<view class="shop-list">
-			<view class="shop-item" v-for="(item,index) in list" :key="index">
-				<label class="radio">
-					<radio value="" color="#FF3333"></radio><text></text>
-				</label>
-				<image class="shop-img" :src="item.imgUrl" mode=""></image>
-				<view class="shop-tex">
-					<view class="shop-name">{{item.name}}</view>
-					<view class="shop-color f-color">{{item.color}}</view>
-					<view class="shop-price">
-						<view>￥{{item.pprice}}</view>
-						<view>*{{item.num}}</view>
+		<template v-if="list.length > 0">
+			<!--自定义导航栏-->
+			<uniNavBar title="购物车" :right-text="isNavBar ? '完成':'编辑'" fixed="true" status-bar="true"
+				@clickRight="isNavBar = !isNavBar"></uniNavBar>
+			<!--商品内容-->
+			<view class="shop-list">
+				<view class="shop-item" v-for="(item,index) in list" :key="index">
+					<label class="radio" @tap="selectedItem(index)">
+						<radio value="" color="#FF3333" :checked="item.checked" ></radio><text></text>
+					</label>
+					<image class="shop-img" :src="item.imgUrl" mode=""></image>
+					<view class="shop-tex">
+						<view class="shop-name">{{item.name}}</view>
+						<view class="shop-color f-color">{{item.color}}</view>
+						<view class="shop-price">
+							<view>￥{{item.pprice}}</view>
+							<template v-if="! isNavBar">
+								<view>*{{item.num}}</view>
+							</template>
+							<template v-else>
+								<uniNumberBox :value="item.num" mim='1' @change="changeNumber($event,index)"></uniNumberBox>
+							</template>
+						</view>
 					</view>
 				</view>
 			</view>
-		</view>
-		<!--底部-->
-		<view class="shop-foot">
-			<label class="radio">
-				<radio value="" color="#FF3333" /><text></text>
-			</label>
-			<view class="foot-total">
-				<view class="foot-count">合计:￥<text class="f-active-color">0</text></view>
-				<view class="foot-num">结算（0）</view>
+			<!--底部-->
+			<view class="shop-foot">
+				<label class="radio foot-radio" @tap="checkAllFn">
+					<radio value="" color="#FF3333" :checked="checkedAll"/><text></text>
+				</label>
+				<template v-if="!isNavBar">
+					<view class="foot-total">
+						<view class="foot-count">合计:￥<text class="f-active-color">{{totalCount.pprice}}</text></view>
+						<view class="foot-num">结算（{{totalCount.num}}）</view>
+					</view>
+				</template>
+				<template v-else>
+					<view class="foot-total">
+						<view class="foot-num" style="background-color: black;">移除收藏夹</view>
+						<view class="foot-num" @tap="delGoodsFn">删除</view>
+					</view>
+				</template>
+				
 			</view>
-		</view>
-
+		</template>
+		<template v-else>
+			<uniNavBar title="购物车" status-bar="true" fixed="true"></uniNavBar>
+			<view class="shop-else-list">
+				<text>囧~购物车还是空的~</text>
+			</view>
+		</template>
+		
 	</view>
 </template>
 
 <script>
 	import uniNavBar from "@/components/uni/uni-nav-bar/uni-nav-bar.vue";
-	import {mapState} from "vuex";
+	import uniNumberBox from"@/components/uni/uni-number-box/uni-number-box.vue"
+	import {mapState,mapActions,mapGetters,mapMutations} from "vuex";
 	export default {
 		data() {
 			return {
@@ -44,23 +67,30 @@
 			}
 		},
 		methods: {
-
+			...mapActions(['checkAllFn','delGoodsFn']),
+			...mapMutations(['selectedItem']),
+			changeNumber(value,index){
+				this.list[index].num = value;
+			}
 		},
 		components: {
-			uniNavBar
+			uniNavBar,
+			uniNumberBox
 		},
-		computed:{
+		computed: {
 			...mapState({
-				list:state => state.cart.list,
-			})
+				list: state => state.cart.list
+			}),
+			...mapGetters(['checkedAll','totalCount'])
 		}
 	}
 </script>
 
 <style scoped>
-	.shop-list{
+	.shop-list {
 		padding-bottom: 100rpx;
 	}
+
 	.shop-item {
 		display: flex;
 		align-items: center;
@@ -108,7 +138,7 @@
 
 	.foot-count {
 		line-height: 100rpx;
-		padding:0 20rpx;
+		padding: 0 20rpx;
 		font-size: 32rpx;
 	}
 
@@ -117,5 +147,17 @@
 		color: #FFFFFF;
 		padding: 0 60rpx;
 		line-height: 100rpx;
+	}
+	.shop-else-list{
+		position: absolute;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #F7F7F7;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		
 	}
 </style>

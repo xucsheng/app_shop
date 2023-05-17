@@ -12,7 +12,6 @@
 		</view>
 		<MyLine></MyLine>
 		<CommodityList :dataList="dataList"></CommodityList>
-
 	</view>
 </template>
 

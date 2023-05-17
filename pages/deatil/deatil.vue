@@ -32,7 +32,7 @@
 		<!--底部-->
 		<view class="detail-foot">
 			<view class="iconfont icon-xiaoxi"></view>
-			<view class="iconfont icon-gouwuche"></view>
+			<view class="iconfont icon-gouwuche" @tap="goShopCart()"></view>
 			<view class="add-shopcart" @tap="showPop()">加入购物车</view>
 			<view class="purchase" @tap="showPop()">立即购买</view>
 		</view>
@@ -43,13 +43,13 @@
 			<!---内容块-->
 			<view class="pop-box" :animation="animationData">
 				<view>
-					<image class="pop-img"   src="../../static/image/Furnishing.jpg" mode=""></image>
+					<image class="pop-img"   :src="goodsContent.imageUrl" mode=""></image>
 				</view>
 				<view class="pop-num">
 					<view>购买数量</view>
-					<uni-number-box></uni-number-box>
+					<uni-number-box :min="1" :value="num" @change="changeNumber"></uni-number-box>
 				</view>
-				<view class="pop-sub">
+				<view class="pop-sub" @tap="addCart">
 					确定
 				</view>
 			</view>
@@ -114,7 +114,8 @@
 				},
 				goodsContent:{
 					
-				}
+				},
+				num:1
 			}
 		},
 		components: {
@@ -189,6 +190,20 @@
 						icon: "none"
 					})
 				});
+			},
+			// 改变商品数量
+			changeNumber(value){
+				this.name = value;
+			},
+			// 跳转到购物车页面
+			goShopCart(){
+				uni.switchTab({
+					url:'../shopCart/shopCart'
+				})
+			},
+			// 加入购物车
+			addCart(){
+				
 			}
 
 		},
@@ -201,7 +216,9 @@
 		},
 		onLoad(e) {
 			this.getData(e.id);
-		}
+		},
+		
+		
 		
 		
 	}
