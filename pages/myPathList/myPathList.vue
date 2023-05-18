@@ -1,14 +1,14 @@
 <template>
 	<view class="my-path-list">
 		<view class="path-list">
-			<view class="path-item">
+			<view class="path-item"  v-for="(item,index) in list" :key="index" @tap="toAddPath(index)">
 				<view class="item-main">
-					<view class="item-name">张三</view>
-					<view class="">18012350148</view>
+					<view class="item-name">{{item.name}}</view>
+					<view class="">{{item.tel}}</view>
 				</view>
 				<view class="item-main">
-					<view class="active">默认</view>
-					<view class="">江苏省无锡市经济开发区</view>
+					<view class="active" v-if="item.isDefault">默认</view>
+					<view class="">{{item.city}} {{item.detail}}</view>
 				</view>
 			</view>
 		</view>
@@ -19,18 +19,36 @@
 </template>
 
 <script>
+	import {mapState} from "vuex";
 	export default {
 		data() {
 			return {
 
 			}
 		},
+		computed:{
+			...mapState({
+				list: state => state.path.list
+			})
+		},
+		
 		methods: {
             goAddPath(){
 				uni.navigateTo({
 					url:'/pages/myAddPath/myAddPath'
 				})
+			},
+			// 修改
+			toAddPath(index){
+				let pahtObj = JSON.stringify({
+					index:index,
+					item:this.list[index]
+				});
+				uni.navigateTo({
+					url:'/pages/myAddPath/myAddPath?data='+pahtObj,
+				})
 			}
+			
 		}
 	}
 </script>

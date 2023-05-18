@@ -2,27 +2,30 @@
 	<view class="my-add-path">
 		<view class="path-item">
 			<view class="">收件人</view>
-			<input type="text" value="" placeholder="收件人姓名" />
+			<input type="text" value="" placeholder="收件人姓名"  v-model="pathObj.name"/>
 		</view>
 		<view class="path-item">
 			<view class="">手机号</view>
-			<input type="text" value="" placeholder="11位手机号" />
+			<input type="text" value="" placeholder="11位手机号" v-model="pathObj.tel"/>
 		</view>
 		<view class="path-item">
 			<view class="">所在地区</view>
-			<input type="text" :value="cityName" placeholder="请选择" @tap="showPicker()" />
+			<input type="text" :value="pathObj.city" placeholder="请选择" @tap="showPicker()" />
 			<mpvue-city-picker ref="mpvueCityPicker" :pickerValueDefault="pickerValueDefault" @onConfirm="onConfirm">
 			</mpvue-city-picker>
 		</view>
 		<view class="path-item">
 			<view class="">详细地址</view>
-			<input type="text" value="" placeholder="5到60字符" />
+			<input type="text" value="" placeholder="5到60字符" v-model="pathObj.detail" />
 		</view>
 		<view class="path-item">
 			<view class="">设为默认地址</view>
-			<label class="radio">
-				<radio value="" class="#FF3333" /><text></text>
-			</label>
+			<radio-group name="" @change="onchecked()">
+				<label class="radio">
+					<radio value="" class="#FF3333"  :checked="pathObj.isDefault"/>
+				</label>
+			</radio-group>
+			
 		</view>
 
 	</view>
@@ -30,24 +33,71 @@
 
 <script>
 	import mpvueCityPicker from "../../components/uni/mpvue-citypicker/mpvueCityPicker.vue"
+	import {mapActions} from 'vuex';
 	export default {
 		data() {
 			return {
-				cityName:'请选择',
-				pickerValueDefault: [0, 0, 1]
+				pickerValueDefault: [0, 0, 1],
+				pathObj:{
+					city:'请选择',
+					name:'',
+					tel:'',
+					detail:'',
+					isDefault:false
+				},
+				i:-1,
+				// 是否修改
+				isStatus:false,
+				
 			}
 		},
 		components: {
 			mpvueCityPicker
 		},
 		methods: {
+			...mapActions(['creatrePathFn','updatePathFn']),
 			showPicker() {
 				this.$refs.mpvueCityPicker.show();
 			},
 			onConfirm(e) {
-				this.cityName = e.label;
+				this.pathObj.city = e.label;
+			},
+			onchecked(){
+				this.pathObj.isDefault= !this.pathObj.isDefault;
+			}
+			
+		},
+		// 页面生命周期
+		onNavigationBarButtonTap() {
+			
+			if(this.isStatus){
+				// 修改
+				this.updatePathFn({
+					index:this.i,
+					item:this.pathObj
+				})
+			}else{
+				// 新增
+				this.creatrePathFn(this.pathObj);
+			}
+			
+			// 返回上一页
+			uni.navigateBack({
+				delta:1
+			})
+		},
+		onLoad(e) {
+			if(e.data){
+				uni.setNavigationBarTitle({
+					title:'修改地址'
+				});
+				let result = JSON.parse(e.data);
+				this.pathObj = result.item;
+				this.i = result.index;
+				this.isStatus = true;
 			}
 		}
+		
 	}
 </script>
 
