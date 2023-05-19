@@ -1,22 +1,6 @@
 export default {
 	state: {
-		list: [{
-				name: '张三',
-				tel: '18311111111',
-				city: '北京是海定区',
-				detail: '2号楼',
-				isDefault: false
-
-			},
-			{
-				name: '李四',
-				tel: '18311111111',
-				city: '北京是海定区',
-				detail: '2号楼',
-				isDefault: true
-
-			}
-		]
+		list:JSON.parse(uni.getStorageSync('pathList') || '[]')
 	},
 	getters: {
 
@@ -37,6 +21,10 @@ export default {
 					v.isDefault = false;
 				}
 			})
+		},
+		// 持久化保存数据
+		persistencePathData(state){
+			uni.setStorageSync('pathList',JSON.stringify(state.list));
 		}
 	},
 
@@ -47,6 +35,9 @@ export default {
 				commit('removePath');
 			}
 			commit('createPath', obj);
+			
+			// 持久化
+			commit('persistencePathData');
 		},
 		updatePathFn({commit},obj){
 			const {index,item} = obj;
@@ -54,9 +45,10 @@ export default {
 				commit('removePath');
 			}
 			commit('updatePath', obj);
+			
+			// 持久化
+			commit('persistencePathData');
 		}
 	}
-
-
 
 }

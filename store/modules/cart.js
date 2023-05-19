@@ -1,7 +1,7 @@
 export default {
 	state: {
-		list: [],
-		selectedList: []
+		list:JSON.parse(uni.getStorageSync('cartList')|| '[]'),
+		selectedList: JSON.parse(uni.getStorageSync('cartSelectedList')|| '[]')
 	},
 	getters: {
 		// 判断是否全选
@@ -34,6 +34,7 @@ export default {
 				v.checked = true;
 				return v.id;
 			})
+			uni.setStorageSync('cartSelectedList',JSON.stringify(state.selectedList));
 		},
 		// 全不选
 		unCheckAll(state) {
@@ -41,6 +42,7 @@ export default {
 				v.checked = false;
 			});
 			state.selectedList = [];
+			uni.setStorageSync('cartSelectedList',JSON.stringify(state.selectedList));
 		},
 		// 全选某个按钮单选
 		selectedItem(state, index) {
@@ -55,21 +57,30 @@ export default {
 				state.list[index].checked = true;
 				state.selectedList.push(id);
 			}
+			uni.setStorageSync('cartList',JSON.stringify(state.list));
+			uni.setStorageSync('cartSelectedList',JSON.stringify(state.selectedList));
 		},
 		delGoods(state){
 			state.list = state.list.filter(v=>{
 				return state.selectedList.indexOf(v.id) === -1;
-			})
+			});
 		},
 		// 加入购物车
 		addShopCart(state,goods){
 			state.list.push(goods);
+			uni.setStorageSync('cartList',JSON.stringify(state.list));
+		},
+		// 持久化数据
+		persistencePathData(state){
+			uni.setStorageSync('cartList',JSON.stringify(state.list));
+			uni.setStorageSync('cartSelectedList',JSON.stringify(state.selectedList));
 		}
 		
 	},
 	actions: {
 		checkAllFn({commit,getters}) {
 			getters.checkedAll ? commit("unCheckAll") : commit("checkAll");
+			commit('persistencePathData');
 		},
 		delGoodsFn({commit}){
 			commit('delGoods');
@@ -77,7 +88,11 @@ export default {
 			uni.showToast({
 				title:'删除成功',
 				icon:"none"
-			})
+			});
+			commit('persistencePathData');
 		}
 	}
 }
+
+
+
