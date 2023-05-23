@@ -1,14 +1,16 @@
 <template>
 	<view class="my-path-list">
 		<view class="path-list">
-			<view class="path-item"  v-for="(item,index) in list" :key="index" @tap="toAddPath(index)">
-				<view class="item-main">
-					<view class="item-name">{{item.name}}</view>
-					<view class="">{{item.tel}}</view>
-				</view>
-				<view class="item-main">
-					<view class="active" v-if="item.isDefault">默认</view>
-					<view class="">{{item.city}} {{item.detail}}</view>
+			<view class=""  v-for="(item,index) in list" :key="index" @tap="toAddPath(index)">
+				<view class="path-item" >
+					<view class="item-main" @tap="goConfirmOrder(item)">
+						<view class="item-name">{{item.name}}</view>
+						<view class="">{{item.tel}}</view>
+					</view>
+					<view class="item-main">
+						<view class="active" v-if="item.isDefault">默认</view>
+						<view class="">{{item.city}} {{item.detail}}</view>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -23,7 +25,7 @@
 	export default {
 		data() {
 			return {
-
+                isSelectPath:false,
 			}
 		},
 		computed:{
@@ -47,8 +49,25 @@
 				uni.navigateTo({
 					url:'/pages/myAddPath/myAddPath?data='+pahtObj,
 				})
+			},
+			// 返回确认订单页面
+			goConfirmOrder(item){
+				// 如果是从确认订单过来的执行以下代码
+				if(this.isSelectPath){
+					uni.$emit("selectPathItem",item);
+					// 返回上一页
+					uni.navigateBack({
+						delta:1
+					})
+					
+				}
+				
 			}
-			
+		},
+		onLoad(e) {
+			if(e.type ==='selectPath'){
+				this.isSelectPath = true;
+			}
 		}
 	}
 </script>

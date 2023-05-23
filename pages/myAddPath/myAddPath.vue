@@ -27,6 +27,11 @@
 			</radio-group>
 			
 		</view>
+		<!--#ifndef APP-VUE-->
+		<view class="add-path">
+			<view class="add-path-btn f-active-color" @tap="savePath()">保存</view>
+		</view>
+		<!--#endif-->
 
 	</view>
 </template>
@@ -64,27 +69,30 @@
 			},
 			onchecked(){
 				this.pathObj.isDefault= !this.pathObj.isDefault;
+			},
+			savePath(){
+				if(this.isStatus){
+					// 修改
+					this.updatePathFn({
+						index:this.i,
+						item:this.pathObj
+					})
+				}else{
+					// 新增
+					this.creatrePathFn(this.pathObj);
+				}
+				
+				// 返回上一页
+				uni.navigateBack({
+					delta:1
+				})
 			}
 			
 		},
 		// 页面生命周期
 		onNavigationBarButtonTap() {
+			this.savePath();
 			
-			if(this.isStatus){
-				// 修改
-				this.updatePathFn({
-					index:this.i,
-					item:this.pathObj
-				})
-			}else{
-				// 新增
-				this.creatrePathFn(this.pathObj);
-			}
-			
-			// 返回上一页
-			uni.navigateBack({
-				delta:1
-			})
 		},
 		onLoad(e) {
 			if(e.data){
@@ -119,5 +127,17 @@
 		flex: 1;
 		text-align: left;
 		padding-left: 10rpx;
+	}
+	.add-path {
+		padding: 20rpx 0;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+	.add-path-btn{
+		border: 2rpx solid #49bdfb;
+		color: #49bdfb;
+		border-radius: 30rpx;
+		padding: 6rpx 60rpx;
 	}
 </style>

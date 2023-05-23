@@ -3,7 +3,9 @@ export default {
 		list:JSON.parse(uni.getStorageSync('pathList') || '[]')
 	},
 	getters: {
-
+       defaultPath(state){
+		     return   state.list.filter(f=>f.isDefault)
+		}
 	},
 	mutations: {
 		createPath(state, obj) {
