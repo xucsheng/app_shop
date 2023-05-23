@@ -34,7 +34,7 @@
 				<template v-if="!isNavBar">
 					<view class="foot-total">
 						<view class="foot-count">合计:￥<text class="f-active-color">{{totalCount.pprice}}</text></view>
-						<view class="foot-num">结算（{{totalCount.num}}）</view>
+						<view class="foot-num" @tap="goConfirmorder">结算（{{totalCount.num}}）</view>
 					</view>
 				</template>
 				<template v-else>
@@ -71,6 +71,11 @@
 			...mapMutations(['selectedItem']),
 			changeNumber(value,index){
 				this.list[index].num = value;
+			},
+			goConfirmorder(){
+				uni.navigateTo({
+					url:'/pages/confirmOrder/confirmOrder'
+				})
 			}
 		},
 		components: {
