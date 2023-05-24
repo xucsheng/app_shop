@@ -7,7 +7,7 @@
 					<image class="config-img" src="../../static/image/config.png" mode=""></image>
 				</view>
 			</view>
-			<view class="header-logo">
+			<view class="header-logo" @tap="goLogin">
 				<image class="logo-img" src="../../static/image/Children.jpg" mode=""></image>
 				<view class="logo-name">用户昵称</view>
 			</view>
@@ -90,7 +90,14 @@
 				uni.navigateTo({
 					url:'/pages/myOrder/myOrder'
 				})
+			},
+			// 登录
+			goLogin(){
+				uni.navigateTo({
+					url:'/pages/login/login'
+				})
 			}
+			
 			
 		}
 	}

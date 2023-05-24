@@ -205,17 +205,26 @@
 				}
 			}
 
+		}, {
+			"path": "pages/paymentSuccess/paymentSuccess",
+			"style": {
+				"navigationBarTitleText": "支付成功",
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/login/login",
+			"style": {
+				"app-plus": {
+					"titleNView": false,
+					"scrollIndicator": "none"
+
+				}
+			}
+
 		}
-	    ,{
-            "path" : "pages/paymentSuccess/paymentSuccess",
-            "style": {
-            	"navigationBarTitleText": "支付成功",
-            	"navigationBarBackgroundColor": "#FFFFFF",
-            	"enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
