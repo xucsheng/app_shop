@@ -32,13 +32,13 @@
 								<image src="../../static/image/up.png" mode=""></image>
 								<view class="">没有账号，去注册</view>
 							</view>
-							
+
 							<view class="login-from">
 								<view class="login-user">
 									<text class="user-text">账号</text>
 									<input type="text" value="" placeholder="请输入手机号/昵称" />
 								</view>
-							
+
 								<view class="login-user">
 									<text class="user-text">密码</text>
 									<input type="text" value="" placeholder="6-16位字符" />
