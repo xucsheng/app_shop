@@ -4,6 +4,8 @@ const {
 var express = require('express');
 var router = express.Router();
 var connection = require('../db/sql.js');
+var user = require('../db/UserSql.js');
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -16,100 +18,91 @@ router.get('/', function(req, res, next) {
 
 router.get('/api/goods', function(req, res, next) {
 	let id = req.query.id;
-	console.log(id);
 	// 查询数据
-	connection.query("SELECT * FROM goods_search  where id ="+ id, (
-		err, result, fileIds) => {
+	connection.query("SELECT * FROM goods_search  where id =" + id, (err, result, fileIds) => {
 		if (err) throw err;
 		res.send({
 			code: 0,
 			data: result
 		})
 	});
-	
+
 });
 
 router.get('/api/goods/list', function(req, res, next) {
 	res.json({
-		code:0,
-		data:[
-			{
-				id:1,
-				name:'家具家访',
-				data:[
-					{
-						name:'家访',
-						list:[
-							{
-								id:1,
-								name:'毛巾/浴巾',
-								imgUrl:'../../static/image/list1.jpg'
+		code: 0,
+		data: [{
+				id: 1,
+				name: '家具家访',
+				data: [{
+						name: '家访',
+						list: [{
+								id: 1,
+								name: '毛巾/浴巾',
+								imgUrl: '../../static/image/list1.jpg'
 							},
 							{
-								id:2,
-								name:'枕头',
-								imgUrl:'../../static/image/list1.jpg'
+								id: 2,
+								name: '枕头',
+								imgUrl: '../../static/image/list1.jpg'
 							}
-					
+
 						]
 					},
 					{
-						name:'生活用品',
-						list:[
-							{
-								id:1,
-								name:'浴室用品',
-								imgUrl:'../../static/image/list1.jpg'
+						name: '生活用品',
+						list: [{
+								id: 1,
+								name: '浴室用品',
+								imgUrl: '../../static/image/list1.jpg'
 							},
 							{
-								id:2,
-								name:'洗晒',
-								imgUrl:'../../static/image/list1.jpg'
+								id: 2,
+								name: '洗晒',
+								imgUrl: '../../static/image/list1.jpg'
 							}
-					
+
 						]
 					},
 				]
 			},
 			{
-				id:2,
-				name:'女装',
-				data:[
-					{
-						name:'裙装',
-						list:[
-							{
-								id:1,
-								name:'连衣裙',
-								imgUrl:'../../static/image/list1.jpg'
+				id: 2,
+				name: '女装',
+				data: [{
+						name: '裙装',
+						list: [{
+								id: 1,
+								name: '连衣裙',
+								imgUrl: '../../static/image/list1.jpg'
 							},
 							{
-								id:2,
-								name:'半身裙',
-								imgUrl:'../../static/image/list1.jpg'
+								id: 2,
+								name: '半身裙',
+								imgUrl: '../../static/image/list1.jpg'
 							}
-					
+
 						]
 					},
 					{
-						name:'上衣',
-						list:[
-							{
-								id:1,
-								name:'T恤',
-								imgUrl:'../../static/image/list1.jpg'
+						name: '上衣',
+						list: [{
+								id: 1,
+								name: 'T恤',
+								imgUrl: '../../static/image/list1.jpg'
 							},
 							{
-								id:2,
-								name:'衬衫',
-								imgUrl:'../../static/image/list1.jpg'
+								id: 2,
+								name: '衬衫',
+								imgUrl: '../../static/image/list1.jpg'
 							}
-					
+
 						]
 					},
 				]
 			}
-			
+
 		]
 	})
 });
@@ -126,14 +119,15 @@ router.get("/api/goods/search", function(req, res, next) {
 	//orderName的key的值
 	let order = req.query[orderName];
 	// 查询数据  
-	connection.query("SELECT * FROM goods_search  where name like '%" + name + "%' order by +"+ orderName +" "+ order, (
-		err, result, fileIds) => {
-		if (err) throw err;
-		res.send({
-			code: 0,
-			data: result
-		})
-	});
+	connection.query("SELECT * FROM goods_search  where name like '%" + name + "%' order by +" + orderName +
+		" " + order, (
+			err, result, fileIds) => {
+			if (err) throw err;
+			res.send({
+				code: 0,
+				data: result
+			})
+		});
 
 });
 
@@ -948,6 +942,48 @@ router.get("/api/index_list/2/data/3", function(req, res, next) {
 		]
 	})
 });
+
+
+// 登录
+router.post("/api/login", function(req, res, next){
+		let parms = {
+			userName:req.body.userName,
+			userPwd:req.body.userPwd
+		}
+		// 查询数据
+		connection.query(user.queryUserName(parms), (error, results, fileIds) => {
+			if (error) throw error;
+			if (results.length > 0) {
+				 connection.query(user.queryUserPwd(parms), (err, result, fileId) => {
+				 	 if (err) throw error;
+				 		if (result.length > 0) {
+							res.send({
+									data:{
+											succes:true,
+											msg:'登录成功',
+											data:result[0]
+											}
+									})
+					    }else{
+							res.send({
+									data:{
+										    succes: false,
+											msg:'密码错误'
+										}
+									})
+						}		   		   
+				 })
+				}else{
+					res.send({
+							data: {
+								    succes: false,
+								    msg: '用户名不存在或者密码错误'
+								}
+							})
+				  }
+			
+		});
+	});
 
 
 module.exports = router;

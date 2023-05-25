@@ -11,7 +11,7 @@
 							<view class="logo">
 								<image class="logo-img" src="../../static/image/logo.jpg" mode=""></image>
 							</view>
-							<view class="tel">手机号注册</view>
+							<view class="tel" @tap="goLoginTel">手机号注册</view>
 							<login-other></login-other>
 							<view class="login-go">
 								<view class="">已有账号去登录</view>
@@ -36,18 +36,18 @@
 							<view class="login-from">
 								<view class="login-user">
 									<text class="user-text">账号</text>
-									<input type="text" value="" placeholder="请输入手机号/昵称" />
+									<input type="text" v-model="userName" value="" placeholder="请输入手机号/昵称" />
 								</view>
 
 								<view class="login-user">
 									<text class="user-text">密码</text>
-									<input type="text" value="" placeholder="6-16位字符" />
+									<input type="text" v-model="userPwd" value="" placeholder="6-16位字符" />
 								</view>
 								<view class="login-quick">
 									<view class="">忘记密码？</view>
 									<view class="">免密登录</view>
 								</view>
-								<view class="tel">登录</view>
+								<view class="tel" @tap="submit">登录</view>
 								<view class="reminder">温馨提示：您可以选择免密登录，更加方便</view>
 								<login-other></login-other>
 							</view>
@@ -60,11 +60,25 @@
 </template>
 
 <script>
+	import $http from '@/common/api/request.js'
 	import LoginOther from '@/components/login/loginOther.vue';
 	export default {
 		data() {
 			return {
-
+				userName: '',
+				userPwd: '',
+				// 验证规则
+				rules: {
+                    userName:{
+						rule:/\S/,
+						msg:"账号不能为空"
+					},
+					userPwd:{
+						rule:/^[0-9a-zA-Z]{6,16}$/,
+						msg:'密码应该为6-16位字符'
+					},
+				},
+				
 			}
 		},
 		components: {
@@ -76,7 +90,65 @@
 				uni.navigateBack({
 					delta: 1
 				})
+			},
+			// 点击登录
+			submit(){
+				if(!this.validate('userName')) return;
+				if(!this.validate('userPwd')) return;
+				uni.showLoading({
+					title:'登录中....'
+				});
+				$http.request({
+					url: "/login",
+					method:'POST',
+					data:{
+						userName:this.userName,
+						userPwd:this.userPwd
+					}
+				}).then((res) => {
+					uni.showToast({
+						title:res.msg,
+						icon:"none"
+					})
+					uni.hideLoading();
+					setTimeout(()=>{
+						uni.hideLoading();
+						uni.navigateBack({
+							delta:1
+						})
+					},2000);
+					
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+				
+				
+				
+				
+				
+			},
+			// 判断验证是否符合要求
+			validate(key){
+				let bool = true;
+				if(!this.rules[key].rule.test(this[key])){
+					uni.showToast({
+						title:this.rules[key].msg,
+						icon:"none"
+					})
+					bool = false;
+				}
+				return bool;
+			},
+			// 进入手机号注册页面
+			goLoginTel(){
+				uni.navigateTo({
+					url:"/pages/loginTel/loginTel"
+				})
 			}
+			
 		}
 	}
 </script>
