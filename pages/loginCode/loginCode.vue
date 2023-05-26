@@ -17,17 +17,22 @@
 </template>
 
 <script>
-	import MyLine from "@/components/common/MyLine.vue"
+	import MyLine from "@/components/common/MyLine.vue";
+	import $http from '@/common/api/request.js';
 	export default {
 		data() {
 			return {
-				codeNum:10,
+				codeNum:60,
 				// 显示文本
 				codeMsg:"",
 				// 按钮是否禁用
 				disabled:false,
 				// 用户输入的验证码
 			    userCode:'',
+				// 手机号
+				phone:'',
+				//验证码
+				code:''
 			}
 		},
 		onReady() {
@@ -35,8 +40,28 @@
 			this.sendCode();
 		},
 		methods: {
+	
 			// 点击验证码发送
 			sendCode(){
+				// 请求接口发送验证码
+				$http.request({
+					url: "/code",
+					method:'POST',
+					data:{
+						userName:this.phone
+					}
+				}).then((res) => {
+					if(res.success){
+						this.code = res.code;
+					}
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+				
+				
 				this.disabled = true;
 				let timer = setInterval(()=>{
 					this.codeNum--;
@@ -47,17 +72,61 @@
 					this.codeNum =10;
 					this.disabled = false;
 					this.codeMsg ='重新发送';
-				},10000);
+				},60000);
 			},
 			goNextIndex(){
-				uni.switchTab({
-					url:'/pages/index/index'
-				})
+		
+				if(this.code == this.userCode){
+					// 请求接口注册账号
+					// 请求接口发送验证码
+					$http.request({
+						url: "/addUser",
+						method:'POST',
+						data:{
+							userName:this.phone,
+							code:this.userCode
+						}
+					}).then((res) => {
+				
+						// 注册成功
+						if(res.success){
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+							uni.redirectTo({
+								url:'/pages/index/index'
+							})
+						}else{
+							uni.showToast({
+								title:res.msg,
+								icon:"none"
+							})
+						}
+					}).catch(() => {
+						uni.showToast({
+							title: "请求失败！",
+							icon: "none"
+						})
+					});
+				
+				}else{
+					
+					uni.showToast({
+						title: "验证码错误",
+						icon: "none"
+					})
+				}
+				
+				
 			}
 			
 		},
 		components: {
 			MyLine
+		},
+		onLoad(e) {
+			this.phone =  e.phone;
 		}
 	}
 </script>

@@ -7,9 +7,10 @@
 					<image class="config-img" src="../../static/image/config.png" mode=""></image>
 				</view>
 			</view>
-			<view class="header-logo" @tap="goLogin">
-				<image class="logo-img" src="../../static/image/Children.jpg" mode=""></image>
-				<view class="logo-name">用户昵称</view>
+			<view class="header-logo">
+				<image class="logo-img" :src="loginStatus ? userInfo.imgUrl:'../../static/image/Children.jpg'" mode="">
+				</image>
+				<view class="logo-name">{{loginStatus ? userInfo.nickName:'用户昵称'}}</view>
 			</view>
 		</view>
 		<!--我的订单-->
@@ -20,154 +21,172 @@
 			</view>
 			<view class="order-list">
 				<view class="order-item">
-					<image  class="order-img"  src="../../static/image/order1.png" mode=""></image>
+					<image class="order-img" src="../../static/image/order1.png" mode=""></image>
 					<view class="">待付款</view>
 				</view>
 				<view class="order-item">
-					<image class="order-img"   src="../../static/image/order2.png" mode=""></image>
+					<image class="order-img" src="../../static/image/order2.png" mode=""></image>
 					<view class="">代付款</view>
 				</view>
 				<view class="order-item">
-					<image class="order-img"  src="../../static/image/order3.png" mode=""></image>
+					<image class="order-img" src="../../static/image/order3.png" mode=""></image>
 					<view class="">代付款</view>
 				</view>
 				<view class="order-item">
-					<image class="order-img"  src="../../static/image/order4.png" mode=""></image>
+					<image class="order-img" src="../../static/image/order4.png" mode=""></image>
 					<view class="">代付款</view>
 				</view>
 				<view class="order-item">
-					<image class="order-img"  src="../../static/image/order5.png" mode=""></image>
+					<image class="order-img" src="../../static/image/order5.png" mode=""></image>
 					<view class="">代付款</view>
 				</view>
 			</view>
 		</view>
-	<!-- 	内容列表 -->
-	<view class="my-content">
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
+		<!-- 	内容列表 -->
+		<view class="my-content">
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
+			<view class="my-content-item">
+				<view class="">我的收藏</view>
+				<view class="">></view>
+			</view>
 		</view>
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
-		</view>
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
-		</view>
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
-		</view>
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
-		</view>
-		<view class="my-content-item">
-			<view class="">我的收藏</view>
-			<view class="">></view>
-		</view>
-		
-	</view>
+		<Tabbar currentPage='my'></Tabbar>
 	</view>
 </template>
 
 <script>
+	import {
+		mapState
+	} from 'vuex';
+	import Tabbar from "@/components/common/Tabbar.vue";
 	export default {
 		data() {
 			return {
-				
+
 			}
 		},
+		computed: {
+			...mapState({
+				loginStatus: state => state.user.loginStatus,
+				userInfo: state => state.user.userInfo
+			})
+		},
+		components: {
+			Tabbar
+		},
 		methods: {
-			goConfig(){
+			goConfig() {
 				uni.navigateTo({
-					url:"/pages/myConfig/myConfig"
+					url: "/pages/myConfig/myConfig"
 				})
 			},
 			// 跳转到我的订单
-			goOrder(){
+			goOrder() {
 				uni.navigateTo({
-					url:'/pages/myOrder/myOrder'
-				})
-			},
-			// 登录
-			goLogin(){
-				uni.navigateTo({
-					url:'/pages/login/login'
+					url: '/pages/myOrder/myOrder'
 				})
 			}
-			
-			
 		}
 	}
 </script>
 
 <style scoped>
-.my-header{
-	background:url(../../static/image/mybg.png) no-repeat;
-	width: 100%;
-	height: 400rpx;
-}
-.header-main{
-	position: relative;
-	top:40rpx;
-}
-.header-config{
-	position: absolute;
-	left: 20rpx;
-}
-.header-logo{
-	position: absolute;
-	left:50%;
-	margin-left: -60rpx;
-	width: 120rpx;
-}
-.config-img{
-	width: 40rpx;
-	height: 40rpx;
-}
-.logo-img{
-	width: 120rpx;
-	height: 120rpx;
-	border: 2rpx solid #CCCCCC;
-	border-radius: 50%;
-	background-color: #FFFFFF;
-}
-.logo-name{
-	font-weight: bold;
-	color: #FFFFFF;
-}
-.order-title{
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20rpx;
-}
-.order-img{
-	width: 66rpx;
-	height: 66rpx;
-}
-.order-list{
-	padding: 20rpx;
-	display: flex;
-}
-.order-item{
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-.my-content-item{
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20rpx 0;
-	border-bottom: 2prx solid #CCCCCC;
-}
-.my-content{
-	margin:20rpx 0 ;
-	padding: 0 20rpx;
-}
+	.my-header {
+		background: url(../../static/image/mybg.png) no-repeat;
+		width: 100%;
+		height: 400rpx;
+	}
+
+	.header-main {
+		position: relative;
+		top: 40rpx;
+	}
+
+	.header-config {
+		position: absolute;
+		left: 20rpx;
+	}
+
+	.header-logo {
+		position: absolute;
+		left: 50%;
+		margin-left: -60rpx;
+		width: 120rpx;
+	}
+
+	.config-img {
+		width: 40rpx;
+		height: 40rpx;
+	}
+
+	.logo-img {
+		width: 120rpx;
+		height: 120rpx;
+		border: 2rpx solid #CCCCCC;
+		border-radius: 50%;
+		background-color: #FFFFFF;
+	}
+
+	.logo-name {
+		font-weight: bold;
+		color: #FFFFFF;
+		text-align: center;
+	}
+
+	.order-title {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20rpx;
+	}
+
+	.order-img {
+		width: 66rpx;
+		height: 66rpx;
+	}
+
+	.order-list {
+		padding: 20rpx;
+		display: flex;
+	}
+
+	.order-item {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.my-content-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20rpx 0;
+		border-bottom: 2prx solid #CCCCCC;
+	}
+
+	.my-content {
+		margin: 20rpx 0;
+		padding: 0 20rpx;
+	}
 </style>

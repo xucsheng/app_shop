@@ -62,6 +62,7 @@
 <script>
 	import $http from '@/common/api/request.js'
 	import LoginOther from '@/components/login/loginOther.vue';
+	import {mapMutations} from 'vuex'
 	export default {
 		data() {
 			return {
@@ -85,6 +86,7 @@
 			LoginOther
 		},
 		methods: {
+			...mapMutations(['login']),
 			// 关闭当前页返回上一页
 			goBack() {
 				uni.navigateBack({
@@ -110,6 +112,11 @@
 						title:res.msg,
 						icon:"none"
 					})
+					if(!res.succes){
+						return;
+					}
+					this.login(res.data);
+					
 					uni.hideLoading();
 					setTimeout(()=>{
 						uni.hideLoading();
@@ -124,11 +131,6 @@
 						icon: "none"
 					})
 				});
-				
-				
-				
-				
-				
 			},
 			// 判断验证是否符合要求
 			validate(key){

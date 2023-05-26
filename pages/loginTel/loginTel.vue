@@ -17,7 +17,8 @@
 </template>
 
 <script>
-	import MyLine from "@/components/common/MyLine.vue"
+	import MyLine from "@/components/common/MyLine.vue";
+	import $http from '@/common/api/request.js';
 	export default {
 		data() {
 			return {
@@ -33,11 +34,36 @@
 			}
 		},
 		methods: {
+			
 			goNextCode(){
+				// 验证手机格式
 				if(!this.validate('userTel')) return;
-				uni.navigateTo({
-					url:"/pages/loginCode/loginCode"
-				})
+				// 验证手机是否存在
+				$http.request({
+					url: "/registered",
+					method:'POST',
+					data:{
+						phone:this.userTel
+					}
+				}).then((res) => {
+					if(!res.success){
+						uni.showToast({
+							title:res.msg,
+							icon:"none"
+						})
+						return;
+					}else{
+						// 手机注册跳转
+						uni.navigateTo({
+							url:"/pages/loginCode/loginCode?phone="+this.userTel
+						})
+					}
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
 			},
 			
            // 判断验证是否符合要求

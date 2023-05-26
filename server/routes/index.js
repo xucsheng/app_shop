@@ -5,6 +5,8 @@ var express = require('express');
 var router = express.Router();
 var connection = require('../db/sql.js');
 var user = require('../db/UserSql.js');
+// 验证码
+let code = "";
 
 
 /* GET home page. */
@@ -945,45 +947,128 @@ router.get("/api/index_list/2/data/3", function(req, res, next) {
 
 
 // 登录
-router.post("/api/login", function(req, res, next){
-		let parms = {
-			userName:req.body.userName,
-			userPwd:req.body.userPwd
-		}
-		// 查询数据
-		connection.query(user.queryUserName(parms), (error, results, fileIds) => {
-			if (error) throw error;
-			if (results.length > 0) {
-				 connection.query(user.queryUserPwd(parms), (err, result, fileId) => {
-				 	 if (err) throw error;
-				 		if (result.length > 0) {
-							res.send({
-									data:{
-											succes:true,
-											msg:'登录成功',
-											data:result[0]
-											}
-									})
-					    }else{
-							res.send({
-									data:{
-										    succes: false,
-											msg:'密码错误'
-										}
-									})
-						}		   		   
-				 })
-				}else{
+router.post("/api/login", function(req, res, next) {
+	let parms = {
+		userName: req.body.userName,
+		userPwd: req.body.userPwd
+	}
+	// 查询数据
+	connection.query(user.queryUserName(parms), (error, results, fileIds) => {
+		if (error) throw error;
+		if (results.length > 0) {
+			connection.query(user.queryUserPwd(parms), (err, result, fileId) => {
+				if (err) throw error;
+				if (result.length > 0) {
 					res.send({
-							data: {
-								    succes: false,
-								    msg: '用户名不存在或者密码错误'
-								}
-							})
-				  }
-			
-		});
+						data: {
+							succes: true,
+							msg: '登录成功',
+							data: result[0]
+						}
+					})
+				} else {
+					res.send({
+						data: {
+							succes: false,
+							msg: '密码错误'
+						}
+					})
+				}
+			})
+		} else {
+			res.send({
+				data: {
+					succes: false,
+					msg: '用户名不存在或者密码错误'
+				}
+			})
+		}
+
 	});
+});
+
+// 注册手机号验证
+router.post("/api/registered", function(req, res, next) {
+	let parms = {
+		userName: req.body.phone,
+	}
+	// 查询数据
+	connection.query(user.queryUserName(parms), (error, results, fileIds) => {
+		if (error) throw error;
+		if (results.length > 0) {
+			res.send({
+				data: {
+					success: false,
+					msg: '手机号已经存在'
+
+				}
+			})
+		} else {
+			res.send({
+				data: {
+					success: true
+				}
+			})
+		}
+	})
+});
+// 发送短信验证码 code
+router.post("/api/code", function(req, res, next) {
+	let parms = {
+		userName: req.body.userName,
+	}
+	// 接入短信sdk
+	//生成验证码  4位  包含数字和字母   
+	let str = "0123456789";
+	let s = '';
+	for (let i = 0; i < 4; i++) {
+		s += str[Math.floor(Math.random() * str.length)];
+	}
+	code = s;
+	console.log("短信验证码：" + code);
+	res.send({
+		data: {
+			success: true,
+			code: code
+		}
+	})
+})
+// 注册手机号  code
+router.post("/api/addUser", function(req, res, next) {
+
+
+	let parms = {
+		userName: req.body.userName,
+		userCode: req.body.code
+	}
+	if (code == parms.userCode) {
+
+		// 查询数据
+		connection.query(user.insertUser(parms), (error, results, fileIds) => {
+			if (error) throw error;
+			res.send({
+				data: {
+					success: true,
+					msg: '注册成功',
+				}
+			})
+			
+		})
+
+	} else {
+		res.send({
+			data: {
+				success: false,
+				msg: '验证码错误'
+			}
+		})
+	}
+
+
+
+
+})
+
 
 
 module.exports = router;

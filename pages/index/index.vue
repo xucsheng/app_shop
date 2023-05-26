@@ -17,9 +17,6 @@
 
 						<block v-for="(k,i) in item.data " :key="i">
 
-
-
-
 							<!--推荐-->
 
 							<IndexSwiper v-if="k.type=='swiperList'" :dataList='k.data'></IndexSwiper>
@@ -85,7 +82,7 @@
 	 
     -->
 
-
+     <Tabbar currentPage='index' ></Tabbar>
 	</view>
 </template>
 
@@ -99,7 +96,8 @@
 	import Banner from "@/components/index/Banner.vue";
 	import Icoms from "@/components/index/Icons.vue";
 	import Hot from "@/components/index/Hot.vue";
-	import Shop from "@/components/index/Shop.vue"
+	import Shop from "@/components/index/Shop.vue";
+	import Tabbar from "@/components/common/Tabbar.vue";
 	export default {
 		data() {
 			return {
@@ -147,7 +145,7 @@
 			this.getClientHeight();
 			uni.getSystemInfo({
 				success: (res) => {
-					this.clentHeight = (res.windowHeight - uni.upx2px(80) - this.getClientHeight()) + 'px';
+					this.clentHeight = (res.windowHeight  - this.getClientHeight()) + 'px';
 				}
 			})
 
@@ -161,7 +159,8 @@
 			Banner,
 			Icoms,
 			Hot,
-			Shop
+			Shop,
+			Tabbar
 		},
 		// 标题栏按钮点击
 		onNavigationBarButtonTap(e) {

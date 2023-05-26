@@ -25,12 +25,14 @@
 
 			</scroll-view>
 		</view>
+		 <Tabbar currentPage='list' ></Tabbar>
 	</view>
 </template>
 
 <script>
-	import $http from '@/common/api/request.js'
-	import MyLine from "@/components/common/MyLine.vue"
+	import $http from '@/common/api/request.js';
+	import MyLine from "@/components/common/MyLine.vue";
+	import Tabbar from "@/components/common/Tabbar.vue";
 	export default {
 		data() {
 			return {
@@ -44,7 +46,8 @@
 			}
 		},
 		components: {
-			MyLine
+			MyLine,
+			Tabbar
 		},
 		methods: {
 			// 获取可视区域高度【兼容]

@@ -52,7 +52,7 @@
 				<text>囧~购物车还是空的~</text>
 			</view>
 		</template>
-		
+		<Tabbar currentPage='shopCart' ></Tabbar>
 	</view>
 </template>
 
@@ -60,6 +60,7 @@
 	import uniNavBar from "@/components/uni/uni-nav-bar/uni-nav-bar.vue";
 	import uniNumberBox from"@/components/uni/uni-number-box/uni-number-box.vue"
 	import {mapState,mapActions,mapGetters,mapMutations} from "vuex";
+	import Tabbar from "@/components/common/Tabbar.vue";
 	export default {
 		data() {
 			return {
@@ -80,7 +81,8 @@
 		},
 		components: {
 			uniNavBar,
-			uniNumberBox
+			uniNumberBox,
+			Tabbar
 		},
 		computed: {
 			...mapState({

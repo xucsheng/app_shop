@@ -8,6 +8,23 @@ import store from  'store/index.js';
 
 Vue.prototype.$store = store;
 
+// 权限跳转
+Vue.prototype.navigateTo =(options)=>{
+	if(!store.state.user.loginStatus){
+		uni.showToast({
+			title:"请先登录",
+			icon:'none'
+		})
+		return  uni.navigateTo({
+			url:"/pages/login/login"
+		})
+	}else{
+		uni.navigateTo(options);
+	}
+}
+
+
+
 
 App.mpType = 'app'
 

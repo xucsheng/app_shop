@@ -9,7 +9,7 @@ var User ={
 	},
 	// 增加一条用户
 	insertUser(param){
-		return "insert into User(user_name,user_pwd,phone,img_url,nick_name,token) values('','','','','','' )";
+		return "insert into User(user_name,user_pwd,phone,img_url,nick_name,token) values('','','"+param.userName+"','../../static/image/logo.jpg','默认昵称','' )";
 	},
 }
 exports = module.exports = User;
