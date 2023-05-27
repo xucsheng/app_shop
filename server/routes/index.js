@@ -1036,23 +1036,24 @@ router.post("/api/code", function(req, res, next) {
 // 注册手机号  code
 router.post("/api/addUser", function(req, res, next) {
 
-
 	let parms = {
 		userName: req.body.userName,
 		userCode: req.body.code
 	}
 	if (code == parms.userCode) {
-
 		// 查询数据
 		connection.query(user.insertUser(parms), (error, results, fileIds) => {
 			if (error) throw error;
-			res.send({
-				data: {
-					success: true,
-					msg: '注册成功',
-				}
+			connection.query(user.queryUserName(parms), (err, result, fileId) => {
+				if (error) throw error;
+				res.send({
+					data: {
+						success: true,
+						msg: '注册成功',
+						data: result[0]
+					}
+				})
 			})
-			
 		})
 
 	} else {
@@ -1064,11 +1065,6 @@ router.post("/api/addUser", function(req, res, next) {
 		})
 	}
 
-
-
-
-})
-
-
+});
 
 module.exports = router;

@@ -9,7 +9,12 @@ var User ={
 	},
 	// 增加一条用户
 	insertUser(param){
-		return "insert into User(user_name,user_pwd,phone,img_url,nick_name,token) values('','','"+param.userName+"','../../static/image/logo.jpg','默认昵称','' )";
+		const jwt = require('jsonwebtoken');
+		// 用户id+时间戳+口令
+		let payload ={name:param.userName};//用户名
+		let secret ='xiaoluxian';//口令
+		let token = jwt.sign(payload,secret);
+		return "insert into User(user_name,user_pwd,phone,img_url,nick_name,token) values('','1234567','"+param.userName+"','../../static/image/logo.jpg','默认昵称','"+token+"' )";
 	},
 }
 exports = module.exports = User;

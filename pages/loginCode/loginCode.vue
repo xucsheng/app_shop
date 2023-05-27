@@ -19,6 +19,7 @@
 <script>
 	import MyLine from "@/components/common/MyLine.vue";
 	import $http from '@/common/api/request.js';
+	import {mapMutations} from 'vuex';
 	export default {
 		data() {
 			return {
@@ -40,7 +41,7 @@
 			this.sendCode();
 		},
 		methods: {
-	
+	       ...mapMutations(['login']),
 			// 点击验证码发送
 			sendCode(){
 				// 请求接口发送验证码
@@ -94,6 +95,9 @@
 								title:res.msg,
 								icon:"none"
 							})
+							// 登录
+							this.login(res.data);
+						    // 跳转到首页
 							uni.redirectTo({
 								url:'/pages/index/index'
 							})
@@ -111,16 +115,12 @@
 					});
 				
 				}else{
-					
 					uni.showToast({
 						title: "验证码错误",
 						icon: "none"
 					})
 				}
-				
-				
 			}
-			
 		},
 		components: {
 			MyLine

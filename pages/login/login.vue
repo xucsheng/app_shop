@@ -41,7 +41,7 @@
 
 								<view class="login-user">
 									<text class="user-text">密码</text>
-									<input type="text" v-model="userPwd" value="" placeholder="6-16位字符" />
+									<input type="password" v-model="userPwd" value="" placeholder="6-16位字符" />
 								</view>
 								<view class="login-quick">
 									<view class="">忘记密码？</view>
