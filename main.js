@@ -19,7 +19,7 @@ Vue.prototype.navigateTo =(options)=>{
 			url:"/pages/login/login"
 		})
 	}else{
-		uni.navigateTo(options);
+		uni.redirectTo(options);
 	}
 }
 

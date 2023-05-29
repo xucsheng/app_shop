@@ -8,8 +8,8 @@
 						<view class="">{{item.tel}}</view>
 					</view>
 					<view class="item-main">
-						<view class="active" v-if="item.isDefault">默认</view>
-						<view class="">{{item.city}} {{item.detail}}</view>
+						<view class="active" v-if="item.isDefault ==1">默认</view>
+						<view class="">{{item.province}}{{item.city}} {{item.district}}{{item.addrsss}}</view>
 					</view>
 				</view>
 			</view>
@@ -21,7 +21,8 @@
 </template>
 
 <script>
-	import {mapState} from "vuex";
+	import $http from '@/common/api/request.js';
+	import {mapState,mapMutations} from "vuex";
 	export default {
 		data() {
 			return {
@@ -35,6 +36,25 @@
 		},
 		
 		methods: {
+			...mapMutations(['_initAddressList']),
+			_initAddress(){
+				// 初始化（请求收货地址接口
+				$http.request({
+					url: "/selectAddress",
+					method:'POST',
+					header:{
+						token:true
+					}
+				}).then((res) => {
+					this._initAddressList(res.data);
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+				
+			},
             goAddPath(){
 				uni.navigateTo({
 					url:'/pages/myAddPath/myAddPath'
@@ -68,6 +88,8 @@
 			if(e.type ==='selectPath'){
 				this.isSelectPath = true;
 			}
+			// 初始化，拿到收货地址
+			this._initAddress();
 		}
 	}
 </script>

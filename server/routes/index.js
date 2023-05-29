@@ -5,6 +5,8 @@ var express = require('express');
 var router = express.Router();
 var connection = require('../db/sql.js');
 var user = require('../db/UserSql.js');
+
+const jwt = require('jsonwebtoken');
 // 验证码
 let code = "";
 
@@ -1066,5 +1068,80 @@ router.post("/api/addUser", function(req, res, next) {
 	}
 
 });
+// 第三方授权登录
+router.post("/api/loginOther", function(req, res, next) {
+
+	let parms = {
+		openid: req.body.openid,
+		provide: req.body.provide,
+		nickName: req.body.nickName,
+		avatarUrl: req.body.avatarUrl
+	}
+
+	// 查询数据
+	connection.query(user.queryUserName(parms), (error, results, fileIds) => {
+		if (error) throw error;
+		if (results.length > 0) {
+			// 存在
+			res.send({
+				data: {
+					success: true,
+					msg: '登录成功',
+					data: results[0]
+				}
+			})
+		} else {
+			// 不存在存储
+			// 查询数据
+			connection.query(user.insertUser(parms), (err, result, fileId) => {
+				if (error) throw error;
+				connection.query(user.queryUserName(parms), (error, results, fileIds) => {
+					if (error) throw error;
+					res.send({
+						data: {
+							success: true,
+							msg: '注册成功',
+							data: results[0]
+						}
+					})
+				})
+			})
+
+		}
+
+	})
+
+});
+// 查询收货地址
+router.post("/api/selectAddress", function(req, res, next) {
+	let token = req.headers.token;
+
+	let phone = jwt.decode(token);
+	connection.query(
+		"select id, user_name as userName,user_pwd as userPwd,phone,img_url as imgUrl,nick_name as nickName,token,open_id as openId,provide   from user  where phone ='" +
+		phone.name + "'",
+		(error, results, fileIds) => {
+          if (error) throw error;
+			let id = results[0].id;
+		
+			connection.query(
+				"select  id, name, tel, province, city, district, addrsss, is_default as isDefault, user_id as userId from address where user_id=" +
+				id, (er, re, fi) => {
+					if (error) throw error;
+					res.send({
+						data: {
+							success: true,
+							msg: '查询地址成功',
+							data: re
+						}
+					})
+					
+				})
+
+		})
+
+
+
+})
 
 module.exports = router;

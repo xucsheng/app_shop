@@ -4,15 +4,15 @@
 			<view class="other-text-title">或用以下方式登录</view>
 		</view>
 		<view class="other">
-			<view class="other-item">
+			<view class="other-item" @tap="loginOther('weixin')">
 				<image src="../../static/image/wx.png" mode=""></image>
 				<view class="微信登录"></view>
 			</view>
-			<view class="other-item">
+			<view class="other-item" @tap="loginOther('sinaweibo')">
 				<image src="../../static/image/wb.png" mode=""></image>
 				<view class="微博登录"></view>
 			</view>
-			<view class="other-item">
+			<view class="other-item" @tap="loginOther('qq')">
 				<image src="../../static/image/qq.png" mode=""></image>
 				<view class="QQ登录"></view>
 			</view>
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+	import $http from '@/common/api/request.js';
+	import {mapMutations} from 'vuex'
 	export default {
 		data() {
 			return {
@@ -28,7 +30,46 @@
 			}
 		},
 		methods: {
-	
+			...mapMutations(['login']),
+	      loginOther(mode){
+			  uni.login({
+				  provider:mode,
+				  success: (res) => {
+					uni.getUserInfo({
+						 // 最主要的就是openid
+						provider:mode,
+						success: (res) => {
+							let provide = mode;
+							let openid = res.userInfo.openId||res.userInfo.openid;
+							let  nickName =res.userInfo.nickName;
+							let avatarUrl = res.userInfo.avatarUrl;
+							$http.request({
+								url: "/loginOther",
+								method:'POST',
+								data:{
+									openid,
+									provide,
+									nickName,
+									avatarUrl
+								}
+							}).then((res) => {
+								// 登录
+								this.login(res.data);
+								// 返回上一页
+								uni.navigateBack({
+									delta:1
+								})
+							}).catch(() => {
+								uni.showToast({
+									title: "请求失败！",
+									icon: "none"
+								})
+							});
+						}
+					})
+				  }
+			  });
+		  }
 		}
 	}
 </script>

@@ -1,6 +1,6 @@
 export default {
 	state: {
-		list:JSON.parse(uni.getStorageSync('pathList') || '[]')
+		list:[]
 	},
 	getters: {
        defaultPath(state){
@@ -20,13 +20,13 @@ export default {
 		removePath(state){
 			state.list.forEach(v=>{
 				if(v.isDefault){
-					v.isDefault = false;
+					v.isDefault = 0;
 				}
 			})
 		},
 		// 持久化保存数据
-		persistencePathData(state){
-			uni.setStorageSync('pathList',JSON.stringify(state.list));
+		_initAddressList(state,list){
+			state.list = list;
 		}
 	},
 
@@ -37,9 +37,6 @@ export default {
 				commit('removePath');
 			}
 			commit('createPath', obj);
-			
-			// 持久化
-			commit('persistencePathData');
 		},
 		updatePathFn({commit},obj){
 			const {index,item} = obj;
@@ -47,9 +44,6 @@ export default {
 				commit('removePath');
 			}
 			commit('updatePath', obj);
-			
-			// 持久化
-			commit('persistencePathData');
 		}
 	}
 

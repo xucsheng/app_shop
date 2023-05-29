@@ -22,7 +22,7 @@
 			<view class="">设为默认地址</view>
 			<radio-group name="" @change="onchecked()">
 				<label class="radio">
-					<radio value="" class="#FF3333"  :checked="pathObj.isDefault"/>
+					<radio value="" class="#FF3333"  :checked="pathObj.isDefault == 1"/>
 				</label>
 			</radio-group>
 			
