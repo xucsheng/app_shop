@@ -15,7 +15,7 @@
 						<view class="shop-name">{{item.name}}</view>
 						<view class="shop-color f-color">{{item.color}}</view>
 						<view class="shop-price">
-							<view>￥{{item.pprice}}</view>
+							<view>￥{{item.pPrice}}</view>
 							<template v-if="! isNavBar">
 								<view>*{{item.num}}</view>
 							</template>
@@ -33,7 +33,7 @@
 				</label>
 				<template v-if="!isNavBar">
 					<view class="foot-total">
-						<view class="foot-count">合计:￥<text class="f-active-color">{{totalCount.pprice}}</text></view>
+						<view class="foot-count">合计:￥<text class="f-active-color">{{totalCount.pPrice}}</text></view>
 						<view class="foot-num" @tap="goConfirmorder">结算（{{totalCount.num}}）</view>
 					</view>
 				</template>
@@ -61,15 +61,37 @@
 	import uniNumberBox from"@/components/uni/uni-number-box/uni-number-box.vue"
 	import {mapState,mapActions,mapGetters,mapMutations} from "vuex";
 	import Tabbar from "@/components/common/Tabbar.vue";
+	import $http from '@/common/api/request.js';
+	
 	export default {
 		data() {
 			return {
 				isNavBar: false,
 			}
 		},
+		onShow() {
+			this.getData();
+		},
 		methods: {
 			...mapActions(['checkAllFn','delGoodsFn']),
-			...mapMutations(['selectedItem']),
+			...mapMutations(['selectedItem','initGetData']),
+			getData(){
+				$http.request({
+					url: "/selectCart",
+					method:'POST',
+					header:{
+						token:true
+					}
+				}).then((res) => {
+					// 存储vux
+					this.initGetData(res.data);
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+			},
 			changeNumber(value,index){
 				this.list[index].num = value;
 			},

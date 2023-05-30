@@ -41,7 +41,7 @@
 			}
 		},
 		methods: {
-			...mapMutations(['loginOut']),
+			...mapMutations(['loginOut','clearShopCart']),
 			goPathList(){
 			   uni.navigateTo({
 			   	url:'/pages/myPathList/myPathList'
@@ -53,6 +53,8 @@
 					icon:'none'
 				});
 				this.loginOut();
+				// 清除购物车缓存
+				this.clearShopCart();
 				// 关闭所有跳转
 				uni.reLaunch({
 					url:'/pages/index/index'

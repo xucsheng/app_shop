@@ -6,6 +6,10 @@ var router = express.Router();
 var connection = require('../db/sql.js');
 var user = require('../db/UserSql.js');
 
+var address = require('../db/addressSql.js');
+
+var cart = require('../db/cartSql.js');
+
 const jwt = require('jsonwebtoken');
 // 验证码
 let code = "";
@@ -1117,17 +1121,55 @@ router.post("/api/selectAddress", function(req, res, next) {
 	let token = req.headers.token;
 
 	let phone = jwt.decode(token);
-	connection.query(
-		"select id, user_name as userName,user_pwd as userPwd,phone,img_url as imgUrl,nick_name as nickName,token,open_id as openId,provide   from user  where phone ='" +
-		phone.name + "'",
-		(error, results, fileIds) => {
-          if (error) throw error;
-			let id = results[0].id;
-		
+	connection.query(user.selectByPhone(phone), (error, results, fileIds) => {
+		if (error) throw error;
+		let id = results[0].id;
+		connection.query(
+			address.selectByUserId(id), (er, re, fi) => {
+				if (error) throw error;
+				res.send({
+					data: {
+						success: true,
+						msg: '查询地址成功',
+						data: re
+					}
+				})
+
+			})
+
+	})
+});
+// 新增收货地址
+router.post("/api/insertAddress", function(req, res, next) {
+	let token = req.headers.token;
+
+	let phone = jwt.decode(token);
+
+	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
+		if (erUser) throw erUser;
+		// 用户id
+		let id = reUser[0].id;
+		let parms = {
+			name: req.body.name,
+			tel: req.body.tel,
+			province: req.body.province,
+			city: req.body.city,
+			district: req.body.district,
+			address: req.body.address,
+			isDefault: req.body.isDefault,
+			userId: id
+		}
+		// 设置默认地址，其它地址设置非默认
+		if (parms.isDefault === 1) {
+			connection.query(address.setIsDefault(id), (errorSetAddress, results) => {
+				if (errorSetAddress) throw errorSetAddress;
+			})
+		};
+		connection.query(address.insert(parms), (errorAddress, results) => {
+			if (errorAddress) throw errorAddress;
 			connection.query(
-				"select  id, name, tel, province, city, district, addrsss, is_default as isDefault, user_id as userId from address where user_id=" +
-				id, (er, re, fi) => {
-					if (error) throw error;
+				address.selectByUserId(id), (er, re, fi) => {
+					if (er) throw er;
 					res.send({
 						data: {
 							success: true,
@@ -1135,13 +1177,66 @@ router.post("/api/selectAddress", function(req, res, next) {
 							data: re
 						}
 					})
-					
 				})
+		});
 
+	});
+
+});
+//  修改收货地址
+router.post("/api/updateAddress", function(req, res, next) {
+	let parms = {
+		name: req.body.name,
+		tel: req.body.tel,
+		province: req.body.province,
+		city: req.body.city,
+		district: req.body.district,
+		address: req.body.address,
+		isDefault: req.body.isDefault,
+		id: req.body.id,
+		userId: req.body.userId
+	}
+	// 设置默认地址，其它地址设置非默认
+	if (parms.isDefault === 1) {
+		connection.query(address.setIsDefault(parms.userId), (errorSetAddress, results) => {
+			if (errorSetAddress) throw errorSetAddress;
 		})
-
-
-
+	};
+	connection.query(address.updateAddress(parms), (errorAddress, results) => {
+		if (errorAddress) throw errorAddress;
+		res.send({
+			data: {
+				success: true,
+				msg: '更新成功'
+			}
+		})
+	});
 })
+// 获取当前用户购物车信息
+router.post("/api/selectCart", function(req, res, next) {
+	console.log("/api/selectCart");
+	let token = req.headers.token;
+
+	let phone = jwt.decode(token);
+	
+	
+
+	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
+		if (erUser) throw erUser;
+		// 用户id
+		let id = reUser[0].id;
+		connection.query(cart.selectByUserId(id), (error, results) => {
+			if (error) throw error;
+			res.send({
+				data: {
+					success: true,
+					msg: '查询成功',
+					data:results
+				}
+			})
+			
+		})
+	})
+});
 
 module.exports = router;

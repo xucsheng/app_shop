@@ -25,6 +25,9 @@ var User ={
 		let openid =param.openid||'';
 		return "insert into User(user_name,user_pwd,phone,img_url,nick_name,token,provide,open_id) values('','1234567','"+userName+"','"+imgUrl+"','"+nickName+"','"+token+"','"+provide+"','"+openid+"' )";
 	},
+	selectByPhone(phone){
+		return "select id, user_name as userName,user_pwd as userPwd,phone,img_url as imgUrl,nick_name as nickName,token,open_id as openId,provide   from user  where phone ='" +phone.name + "'";
+	}
 	
 }
 exports = module.exports = User;
