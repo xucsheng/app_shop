@@ -12,7 +12,7 @@
 		</swiper>
 		<!--价格和名称-->
 		<view class="detail-goods">
-			<view class="goods-pprice">￥{{goodsContent.pprice}}</view>
+			<view class="goods-pprice">￥{{goodsContent.pPrice}}</view>
 			<view class="goods-price">￥{{goodsContent.oprice}}</view>
 			<view class="goods-name">{{goodsContent.name}}</view>
 		</view>
@@ -80,7 +80,7 @@
 						id: 1,
 						imageUrl: '../../static/image/commodity1.jpg',
 						name: '大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008',
-						pprice: "299",
+						pPrice: "299",
 						oprice: "659",
 						discount: "5.2"
 					},
@@ -88,7 +88,7 @@
 						id: 2,
 						imageUrl: '../../static/image/commodity2.jpg',
 						name: '大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008',
-						pprice: "299",
+						pPrice: "299",
 						oprice: "659",
 						discount: "5.2"
 					},
@@ -96,7 +96,7 @@
 						id: 3,
 						imageUrl: '../../static/image/commodity3.jpg',
 						name: '大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008',
-						pprice: "299",
+						pPrice: "299",
 						oprice: "659",
 						discount: "5.2"
 					},
@@ -104,7 +104,7 @@
 						id: 4,
 						imageUrl: '../../static/image/commodity4.jpg',
 						name: '大姨绒毛大款2020年必须买，不买你就不行了，爆款GN008',
-						pprice: "299",
+						pPrice: "299",
 						oprice: "659",
 						discount: "5.2"
 					}
@@ -208,17 +208,37 @@
 				let goods = this.goodsContent;
 				this.goodsContent['checked'] = false;
 				this.goodsContent['num'] = this.num;
-				// 添加到购物车
-				this.addShopCart( this.goodsContent);
-				// 隐藏弹出框
-				this.hidePop();
-				// 提示信息
-				uni.showToast({
-					title:'成功加入购物车',
-					icon:'none'
-				})
+				$http.request({
+					url: "/addCart",
+					method:'POST',
+					
+					header:{
+						token:true
+					},
+					data:{
+					    goodsId:this.goodsContent.id,
+					    name:this.goodsContent.name,
+						imageUrl:this.goodsContent.imageUrl,
+						pprice:this.goodsContent.pprice,
+						num:this.num
+					}
+				}).then((res) => {
+					// 添加到购物车
+					this.addShopCart(this.goodsContent);
+					// 隐藏弹出框
+					this.hidePop();
+					// 提示信息
+					uni.showToast({
+						title:'成功加入购物车',
+						icon:'none'
+					})
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
 			}
-
 		},
 		// 生命周期  修改返回默认行为
 		onBackPress() {

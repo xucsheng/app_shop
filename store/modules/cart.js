@@ -25,6 +25,10 @@ export default {
 			})
 			
 			return total;
+		},
+		// 查询vuex中选中的商品
+		getSelectedList(state){
+			return state.selectedList;
 		}
 	},
 	mutations: {

@@ -11,95 +11,92 @@
 				</view>
 				<view class="map-city">收货地址：{{path.city}}{{path.detail}}</view>
 			</template>
-			<template v-else >
+			<template v-else>
 				<view class="map-name">请选择地址</view>
 			</template>
 		</view>
 		<!-- 商品 -->
 		<view class="goods-list">
-			<view class="goods-contain bg-active-color">
-				<image class="goods-image" src="../../static/image/Children1.jpg" mode=""></image>
+			<view class="goods-contain bg-active-color" v-for="(item,index) in goodsList" :key="index">
+				<image class="goods-image" :src="item.imgUrl" mode=""></image>
 				<view class="goods-text">
-					<view class="goods-name">商品名称
+					<view class="goods-name">{{item.name}}
 					</view>
 					<view class="goods-size f-color">顔色分类：黑色</view>
 					<view class="f-active-color" style="font-size: 24rpx;">7天无理由</view>
 				</view>
 				<view class="">
-					<view class="">￥299</view>
-					<view class="f-active-color">*1</view>
-				</view>
-			</view>
-			<view class="goods-contain bg-active-color">
-				<image class="goods-image" src="../../static/image/Children1.jpg" mode=""></image>
-				<view class="goods-text">
-					<view class="goods-name">商品名称
-					</view>
-					<view class="goods-size f-color">顔色分类：黑色</view>
-					<view class="f-active-color" style="font-size: 24rpx;">7天无理由</view>
-				</view>
-				<view class="">
-					<view class="">￥299</view>
-					<view class="f-active-color">*1</view>
+					<view class="">￥{{item.pPrice}}</view>
+					<view class="f-active-color">*{{item.num}}</view>
 				</view>
 			</view>
 
 		</view>
 		<!-- 底部：提交订单 -->
 		<view class="order-foot">
-			<view class="total-price " >合计：<text class="f-active-color">￥3999.00</text></view>
+			<view class="total-price ">合计：<text class="f-active-color">￥{{totalCount.pPrice}}</text></view>
 			<view class="confirm-submit" @tap="goPayment">提交订单</view>
 		</view>
 	</view>
 
-	</view>
-
-
-
-	</view>
 </template>
 
 <script>
 	import MyLine from '@/components/common/MyLine.vue';
-	import {mapGetters} from 'vuex';
-	
+	import {
+		mapGetters,
+		mapState
+	} from 'vuex';
+
 	export default {
 		data() {
 			return {
-               path:false,
+				path: false,
 			}
 		},
-		computed:{
-			...mapGetters(['defaultPath'])
+		computed: {
+			...mapGetters(['defaultPath', 'totalCount']),
+			...mapState({
+				list: state => state.cart.list
+			}),
+			// 根据商品列表找到对应选择商品
+			goodsList() {
+				return this.item.map(id => {
+					return this.list.find(v => v.id === id);
+				})
+			}
 		},
 		components: {
 			MyLine
 		},
 		methods: {
-             gotoPathList(){
-				 uni.navigateTo({
-				 	url:'/pages/myPathList/myPathList?type=selectPath'
-				 })
-			 },
-			 // 确认支付
-			 goPayment(){
-				 uni.navigateTo({
-				 	url:"/pages/payment/payment"
-				 })
-			 }
+			gotoPathList() {
+				uni.navigateTo({
+					url: '/pages/myPathList/myPathList?type=selectPath'
+				})
+			},
+			// 确认支付
+			goPayment() {
+				uni.navigateTo({
+					url: "/pages/payment/payment"
+				})
+			}
 		},
-		onLoad() {
+		onLoad(e) {
+
+			// 选中商品id
+			this.item = JSON.parse(e.detail);
 			// 如果有默认地址的赋值
-			if(this.defaultPath.length){
-				 this.path = this.defaultPath[0];
+			if (this.defaultPath.length) {
+				this.path = this.defaultPath[0];
 			}
 			// 如果触发自定义数据，on去接收数据
-			uni.$on('selectPathItem',(res)=>{
-				 this.path  = res;
+			uni.$on('selectPathItem', (res) => {
+				this.path = res;
 			})
 		},
 		onUnload() {
-			uni.$off("selectPathItem",()=>{
+			uni.$off("selectPathItem", () => {
 				console.log('移除了selectPathItem');
 			})
 		}
@@ -172,9 +169,11 @@
 		justify-content: flex-end;
 		align-items: center;
 	}
-	.total-price{
+
+	.total-price {
 		padding: 0 20rpx;
 	}
+
 	.confirm-submit {
 		color: #FFFFFF;
 		background-color: #49BDFB;

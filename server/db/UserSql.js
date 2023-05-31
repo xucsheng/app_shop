@@ -29,5 +29,6 @@ var User ={
 		return "select id, user_name as userName,user_pwd as userPwd,phone,img_url as imgUrl,nick_name as nickName,token,open_id as openId,provide   from user  where phone ='" +phone.name + "'";
 	}
 	
+	
 }
 exports = module.exports = User;

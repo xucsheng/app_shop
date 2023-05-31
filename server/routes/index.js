@@ -1214,13 +1214,8 @@ router.post("/api/updateAddress", function(req, res, next) {
 })
 // 获取当前用户购物车信息
 router.post("/api/selectCart", function(req, res, next) {
-	console.log("/api/selectCart");
 	let token = req.headers.token;
-
 	let phone = jwt.decode(token);
-	
-	
-
 	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
 		if (erUser) throw erUser;
 		// 用户id
@@ -1231,12 +1226,97 @@ router.post("/api/selectCart", function(req, res, next) {
 				data: {
 					success: true,
 					msg: '查询成功',
-					data:results
+					data: results
 				}
 			})
-			
+
 		})
 	})
+});
+// 更新购物车数量
+router.post("/api/updateCart", function(req, res, next) {
+	let params = {
+		id: req.body.id,
+		num: req.body.num
+	}
+	connection.query(cart.updateNumById(params), (error, results) => {
+		if (error) throw error;
+		res.send({
+			data: {
+				success: true,
+				msg: '更新成功'
+			}
+		})
+
+	})
+});
+// 删除购物车
+router.post("/api/deleteCart", function(req, res, next) {
+	const selectedList = req.body.selectedList;
+	let ids = "";
+	selectedList.forEach((item) => {
+		ids += item + ",";
+	})
+	ids = ids.substring(0, ids.lastIndexOf(','));
+	connection.query(cart.deleteByIds(ids), (error, results) => {
+		if (error) throw error;
+		res.send({
+			data: {
+				success: true,
+				msg: '删除成功'
+			}
+		})
+	})
+});
+// 加入购物车 addCart
+router.post("/api/addCart", function(req, res, next) {
+	let token = req.headers.token;
+	let phone = jwt.decode(token);
+	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
+		if (erUser) throw erUser;
+		// 用户id
+		let id = reUser[0].id;
+		let params = {
+			uId: id,
+			goodsId: req.body.goodsId,
+			name: req.body.name,
+			imgUrl: req.body.imageUrl,
+			pPrice: req.body.pprice,
+			num: req.body.num
+		}
+		// 查询购物车中是否存在
+		connection.query(cart.selectByUserIdAndGoodsId(params), (e, r) => {
+			if (e) throw e;
+			if (r &&  r.length === 1) {
+				let obj = r[0];
+				// 修改购物车中商品数量
+				obj.num = obj.num+params.num;
+				connection.query(cart.updateNumById(obj), (error, results) => {
+					if (error) throw error;
+					res.send({
+						data: {
+							success: true,
+							msg: '添加成功'
+						}
+					})
+				});
+			} else {
+				// 新增购物车
+				connection.query(cart.addCart(params), (error, results) => {
+					if (error) throw erUser;
+					res.send({
+						data: {
+							success: true,
+							msg: '添加成功'
+						}
+					});
+
+				})
+			}
+		})
+
+	});
+
 });
 
 module.exports = router;

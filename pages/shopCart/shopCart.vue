@@ -20,7 +20,7 @@
 								<view>*{{item.num}}</view>
 							</template>
 							<template v-else>
-								<uniNumberBox :value="item.num" mim='1' @change="changeNumber($event,index)"></uniNumberBox>
+								<uniNumberBox :value="item.num" mim='1' @change="changeNumber($event,index,item)"></uniNumberBox>
 							</template>
 						</view>
 					</view>
@@ -40,7 +40,7 @@
 				<template v-else>
 					<view class="foot-total">
 						<view class="foot-num" style="background-color: black;">移除收藏夹</view>
-						<view class="foot-num" @tap="delGoodsFn">删除</view>
+						<view class="foot-num" @tap="delGoods">删除</view>
 					</view>
 				</template>
 				
@@ -92,14 +92,64 @@
 					})
 				});
 			},
-			changeNumber(value,index){
-				this.list[index].num = value;
+			changeNumber(value,index,item){
+				$http.request({
+					url: "/updateCart",
+					method:'POST',
+					header:{
+						token:true
+					},
+					data:{
+						id:item.id,
+						num:value
+					}
+				}).then((res) => {
+					// 存储
+					this.list[index].num = value;
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+				
 			},
 			goConfirmorder(){
-				uni.navigateTo({
-					url:'/pages/confirmOrder/confirmOrder'
-				})
-			}
+				if(this.getSelectedList && this.getSelectedList.length === 0){
+					return uni.showToast({
+						title:'至少选择一个商品',
+						icon:"none"
+					});
+				}else{
+					uni.navigateTo({
+						url:`/pages/confirmOrder/confirmOrder?detail=${JSON.stringify(this.getSelectedList)}`
+					})
+				}
+				
+			},
+			// 购物车删除
+			delGoods(){
+				$http.request({
+					url: "/deleteCart",
+					method:'POST',
+					header:{
+						token:true
+					},
+					data:{
+						selectedList:this.getSelectedList
+					}
+					
+				}).then((res) => {
+					// 删除购物车
+				    this.delGoodsFn();
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
+			},
+			
 		},
 		components: {
 			uniNavBar,
@@ -110,7 +160,7 @@
 			...mapState({
 				list: state => state.cart.list
 			}),
-			...mapGetters(['checkedAll','totalCount'])
+			...mapGetters(['checkedAll','totalCount','getSelectedList'])
 		}
 	}
 </script>
