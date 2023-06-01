@@ -74,7 +74,7 @@
 		},
 		methods: {
 			...mapActions(['checkAllFn','delGoodsFn']),
-			...mapMutations(['selectedItem','initGetData']),
+			...mapMutations(['selectedItem','initGetData','initOrder']),
 			getData(){
 				$http.request({
 					url: "/selectCart",
@@ -121,9 +121,42 @@
 						icon:"none"
 					});
 				}else{
-					uni.navigateTo({
-						url:`/pages/confirmOrder/confirmOrder?detail=${JSON.stringify(this.getSelectedList)}`
+					let newList = [];
+					this.list.forEach((item)=>{
+						this.getSelectedList.filter(v=>{
+							if(item.id == v){
+								newList.push(item);
+							}
+						})
 					})
+					// 初始化（请求收货地址接口
+					$http.request({
+						url: "/addOrder",
+						method: 'POST',
+						header: {
+							token: true
+						},
+						data:{
+							arr:newList
+						}
+					}).then((res) => {
+						if(res.success){
+							// 存储订单
+							this.initOrder(res.data.orderId);
+							
+							// 跳转页面
+							uni.navigateTo({
+								url:`/pages/confirmOrder/confirmOrder?detail=${JSON.stringify(this.getSelectedList)}`
+							})
+						}
+					
+					}).catch(() => {
+						uni.showToast({
+							title: "请求失败！",
+							icon: "none"
+						})
+					});
+					
 				}
 				
 			},

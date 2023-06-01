@@ -10,6 +10,8 @@ var address = require('../db/addressSql.js');
 
 var cart = require('../db/cartSql.js');
 
+var order = require('../db/orderSql.js');
+
 const jwt = require('jsonwebtoken');
 // 验证码
 let code = "";
@@ -1287,10 +1289,10 @@ router.post("/api/addCart", function(req, res, next) {
 		// 查询购物车中是否存在
 		connection.query(cart.selectByUserIdAndGoodsId(params), (e, r) => {
 			if (e) throw e;
-			if (r &&  r.length === 1) {
+			if (r && r.length === 1) {
 				let obj = r[0];
 				// 修改购物车中商品数量
-				obj.num = obj.num+params.num;
+				obj.num = obj.num + params.num;
 				connection.query(cart.updateNumById(obj), (error, results) => {
 					if (error) throw error;
 					res.send({
@@ -1318,5 +1320,109 @@ router.post("/api/addCart", function(req, res, next) {
 	});
 
 });
+// 生成订单
+router.post("/api/addOrder", function(req, res, next) {
+	let token = req.headers.token;
+	let phone = jwt.decode(token);
+	let goodsArr = req.body.arr;
+	// 生成订单号
+	function setTimeDatreFmt(s) {
+		return s < 10 ? '0' + s : s;
+	}
+
+	function orderNumber() {
+		const now = new Date();
+		let fullYear = setTimeDatreFmt(now.getFullYear());
+		let month = setTimeDatreFmt(now.getMonth() + 1);
+		let day = setTimeDatreFmt(now.getDate());
+		let hour = setTimeDatreFmt(now.getHours());
+		let minutes = setTimeDatreFmt(now.getMinutes());
+		let seconds = setTimeDatreFmt(now.getSeconds());
+		let orderCode = fullYear + month + day + hour + minutes + seconds + (Math.round(Math.random() *
+			100000));
+		return orderCode;
+	}
+	// 商品名称
+	let goodsName = [];
+	// 订单总价
+	let goodsPrice = 0;
+	// 订单商品总数量
+	let goodsNum = 0;
+	// 订单号
+	let orderId = orderNumber();
+	goodsArr.forEach(v => {
+		goodsName.push(v.name);
+		goodsNum += v.num;
+		goodsPrice += v.num * v.pPrice;
+	});
+	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
+		if (erUser) throw erUser;
+		// 用户id
+		let id = reUser[0].id;
+		let params = {
+			uId: id,
+			orderId,
+			goodsName,
+			goodsPrice,
+			goodsNum,
+			orderStatus: 1
+		};
+		connection.query(order.addOrder(params), (error, results) => {
+			if (error) throw error;
+			connection.query(order.selectByOrderId(orderId), (er, re) => {
+				res.send({
+					data: {
+						success: true,
+						msg: '创建订单成功',
+						data: re[0]
+					}
+				});
+			})
+		});
+	})
+});
+// 修改状态订单 submitOrder
+router.post("/api/submitOrder", function(req, res, next) {
+	let token = req.headers.token;
+	let phone = jwt.decode(token);
+	// 订单号
+	let orderId = req.body.orderId;
+	// 选择购物车
+	const selectedList = req.body.selectedList;
+	
+	connection.query(user.selectByPhone(phone), (erUser, reUser) => {
+		if (erUser) throw erUser;
+		// 用户id
+		let id = reUser[0].id;
+		// 查询订单
+		connection.query(order.selectByOrderId(orderId), (er, re) => {
+			if (er) throw er;
+			if (re && re.length == 1) {
+				// 订单Id
+				let id = re[0].id;
+				// 更新购物车状态
+				connection.query(order.updateOrderStatus(id, 2), (e, reOrder) => {
+					if (e) throw e;
+					// 清理购物车数据
+					let ids = "";
+					selectedList.forEach((item) => {
+						ids += item + ",";
+					})
+					ids = ids.substring(0, ids.lastIndexOf(','));
+					connection.query(cart.deleteByIds(ids), (error, results) => {
+						if (error) throw error;
+						res.send({
+							data: {
+								code:200,
+								success: true
+							}
+						})
+					});
+				});
+			}
+		});
+	});
+});
+
 
 module.exports = router;

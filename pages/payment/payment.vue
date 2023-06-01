@@ -4,35 +4,38 @@
 		<uniNavBar title="确认支付" left-text="关闭" fixed="true" status-bar="true" @clickLeft="goBack"></uniNavBar>
 
 		<view class="pay-main">
-			<label for="">
-				<view class="pay-item">
-					<image class="pay-img" src="../../static/image/zfb.png" mode=""></image>
-					<view class="">
-						<view class="">支付宝支付</view>
-						<view class="pay-txt">推荐支付宝用户使用</view>
+			<radio-group>
+				<label for="">
+					<view class="pay-item">
+						<image class="pay-img" src="../../static/image/zfb.png" mode=""></image>
+						<view class="">
+							<view class="">支付宝支付</view>
+							<view class="pay-txt">推荐支付宝用户使用</view>
+						</view>
+						<label class="radio">
+							<radio value="" color="#FF3333" /><text></text>
+						</label>
 					</view>
-					<label class="radio">
-						<radio value="" color="#FF3333" /><text></text>
-					</label>
-				</view>
-			</label>
-			<label for="">
-				<view class="pay-item">
-					<image class="pay-img" src="../../static/image/wxf.png" mode=""></image>
-					<view class="">
-						<view class="">微信支付</view>
-						<view class="pay-txt">推荐微信用户使用</view>
+				</label>
+				<label for="">
+					<view class="pay-item">
+						<image class="pay-img" src="../../static/image/wxf.png" mode=""></image>
+						<view class="">
+							<view class="">微信支付</view>
+							<view class="pay-txt">推荐微信用户使用</view>
+						</view>
+						<label class="radio">
+							<radio value="" color="#FF3333" /><text></text>
+						</label>
 					</view>
-					<label class="radio">
-						<radio value="" color="#FF3333" /><text></text>
-					</label>
-				</view>
-			</label>
+				</label>
+			</radio-group>
+			
 		</view>
 		<!-- 去底部支付 -->
 		<view class="pay-foot">
 			<view class="total">
-				<text class="f-color">合计</text><text class="total-price">￥2599.00</text>
+				<text class="f-color">合计</text><text class="total-price">￥{{details.price}}</text>
 			</view>
 			<view class="go-pay" @tap="goPayment">去支付</view>
 		</view>
@@ -44,7 +47,9 @@
 	export default {
 		data() {
 			return {
-
+               details:{
+				   price:0
+			   }
 			}
 		},
 		methods: {
@@ -64,6 +69,9 @@
 		},
 		components: {
 			uniNavBar
+		},
+		onLoad(e) {
+			this.details = JSON.parse(e.details);
 		}
 	}
 </script>

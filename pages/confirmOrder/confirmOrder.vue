@@ -43,9 +43,11 @@
 
 <script>
 	import MyLine from '@/components/common/MyLine.vue';
+	import $http from '@/common/api/request.js';
 	import {
 		mapGetters,
-		mapState
+		mapState,
+		mapMutations
 	} from 'vuex';
 
 	export default {
@@ -57,7 +59,9 @@
 		computed: {
 			...mapGetters(['defaultPath', 'totalCount']),
 			...mapState({
-				list: state => state.cart.list
+				list: state => state.cart.list,
+				orderNumber: state => state.order.orderNumber,
+				selectedList: state => state.cart.selectedList
 			}),
 			// 根据商品列表找到对应选择商品
 			goodsList() {
@@ -70,6 +74,7 @@
 			MyLine
 		},
 		methods: {
+			...mapMutations(['_initAddressList']),
 			gotoPathList() {
 				uni.navigateTo({
 					url: '/pages/myPathList/myPathList?type=selectPath'
@@ -77,19 +82,64 @@
 			},
 			// 确认支付
 			goPayment() {
-				uni.navigateTo({
-					url: "/pages/payment/payment"
-				})
+				if (!this.path) {
+					return uni.showToast({
+						title: "请选择收货地址",
+						icon: "none"
+					})
+				};
+				$http.request({
+					url: "/submitOrder",
+					method: 'POST',
+					header: {
+						token: true
+					},
+					data: {
+						orderId: this.orderNumber,
+						selectedList: this.selectedList
+					}
+				}).then((res) => {
+					if (res.code == 200) {
+						// 跳转到支付页面
+						uni.navigateTo({
+							url: "/pages/payment/payment?details=" + JSON.stringify({
+								price: this.totalCount.pPrice
+
+							})
+						})
+					}
+				}).catch(() => {
+					uni.showToast({
+						title: "请求失败！",
+						icon: "none"
+					})
+				});
 			}
 		},
 		onLoad(e) {
 
+			// 初始化（请求收货地址接口
+			$http.request({
+				url: "/selectAddress",
+				method: 'POST',
+				header: {
+					token: true
+				}
+			}).then((res) => {
+				this._initAddressList(res.data);
+				// 如果有默认地址的赋值
+				if (this.defaultPath.length) {
+					this.path = this.defaultPath[0];
+				}
+			}).catch(() => {
+				uni.showToast({
+					title: "请求失败！",
+					icon: "none"
+				})
+			});
 			// 选中商品id
 			this.item = JSON.parse(e.detail);
-			// 如果有默认地址的赋值
-			if (this.defaultPath.length) {
-				this.path = this.defaultPath[0];
-			}
+
 			// 如果触发自定义数据，on去接收数据
 			uni.$on('selectPathItem', (res) => {
 				this.path = res;

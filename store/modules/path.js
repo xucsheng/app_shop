@@ -4,7 +4,9 @@ export default {
 	},
 	getters: {
        defaultPath(state){
-		     return   state.list.filter(f=>f.isDefault)
+		     return   state.list.filter(f=>{
+				    return  f.isDefault ==1;
+				 });
 		}
 	},
 	mutations: {
